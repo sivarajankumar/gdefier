@@ -1,0 +1,24 @@
+{% if not is_dashboard %}
+{% extends 'base_course.html' %}
+{% endif %}
+
+{% block top_content %}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="gcb-cols">
+  <div class="gcb-col-1">
+  </div>
+  <div class="gcb-col-7 gcb-aside gcb-button-box">
+    <p class="gcb-top-content">
+      {% if error_code == 'disabled_gDefier_module' %}
+        {# I18N: Error accessing to a Course with NO G-Defier module. #}
+        ERROR : G-Defier Module is NOT enabled for this course.
+	 {% endif %}
+
+    </p>
+  </div>
+</div>
+
+{% endblock %}

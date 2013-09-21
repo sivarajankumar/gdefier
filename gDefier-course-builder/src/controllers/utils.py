@@ -21,6 +21,7 @@ import hmac
 import os
 import time
 import urlparse
+import sites
 
 import appengine_config
 from common import jinja_utils
@@ -234,6 +235,11 @@ class ApplicationHandler(webapp2.RequestHandler):
         )
         template_environ.filters[
             'gcb_tags'] = jinja_utils.get_gcb_tags_filter(self)
+            
+        course = sites.get_course_for_current_request()
+        if course.get_slug().split("_")[-1] == "DFR":
+            self.template_value['gDefier_enabled'] = True
+        
         return template_environ.get_template(template_file)
 
     def canonicalize_url(self, location):

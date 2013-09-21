@@ -229,7 +229,8 @@ class CoursesItemRESTHandler(BaseRESTHandler):
             "properties": {
                 "name": {"type": "string"},
                 "title": {"type": "string"},
-                "admin_email": {"type": "string"}
+                "admin_email": {"type": "string"},
+                "gDefier_module": {"type": "boolean"}
                 }
         }
         """
@@ -241,7 +242,9 @@ class CoursesItemRESTHandler(BaseRESTHandler):
         (['properties', 'name', '_inputex'], {'label': 'Unique Name'}),
         (['properties', 'title', '_inputex'], {'label': 'Course Title'}),
         (['properties', 'admin_email', '_inputex'], {
-            'label': 'Course Admin Email'})]
+            'label': 'Course Admin Email'}),
+        (['properties', 'gDefier_module', '_inputex'], {
+            'label': 'G-Defier Module'})]
 
     def get(self):
         """Handles HTTP GET verb."""
@@ -255,7 +258,8 @@ class CoursesItemRESTHandler(BaseRESTHandler):
             payload_dict={
                 'name': 'new_course',
                 'title': 'My New Course',
-                'admin_email': self.get_user().email()},
+                'admin_email': self.get_user().email(),
+                'gDefier_module': 'True'},
             xsrf_token=XsrfTokenManager.create_xsrf_token(
                 'add-course-put'))
 
@@ -276,7 +280,12 @@ class CoursesItemRESTHandler(BaseRESTHandler):
         name = json_object.get('name')
         title = json_object.get('title')
         admin_email = json_object.get('admin_email')
-
+        
+        gDefier_module = json_object.get('gDefier_module')
+        # If G-Defier module is active the name of the course will have a tag
+        if gDefier_module:
+            name = name + "_DFR"
+        
         # Add the new course entry.
         errors = []
         entry = sites.add_new_course_entry(name, title, admin_email, errors)
