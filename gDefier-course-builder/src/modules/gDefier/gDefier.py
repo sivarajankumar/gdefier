@@ -268,13 +268,11 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
         
         ns = ApplicationContext.get_namespace_name_for_request()
         app_context = sites.get_app_context_for_namespace(ns)
-        
-        print app_context
+
         course_data_filename = sites.abspath(app_context.get_home_folder(), DFR_CONFIG_FILENAME)
-        print course_data_filename
+
         if app_context.fs.isfile(course_data_filename):
             course_yaml = app_context.fs.open(course_data_filename)
-            print course_yaml
         if not course_yaml:
             return deep_dict_merge(gDefier_model.DEFAULT_COURSE_GDEFIER_DICT,
                                    [])
