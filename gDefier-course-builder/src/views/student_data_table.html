@@ -49,7 +49,36 @@
       </td>
     </tr>
   {% endfor %}
+  
+  <!--------------- GDEFIER MODIFICATION ------------------------> 
+ <tr>
+    {# I18N: Table header for the student's GDefier scores. #}
+    <th align="left" colspan=2>
+      {{ gettext('G-Defier scores') }}
+    </th>
+  </tr>
 
+  {% for assessment in score_list %}
+    <tr>
+      <th align="left">&nbsp;&nbsp;&nbsp;{{ assessment['title'] }}</th>
+      <td>
+        {% if assessment['human_graded'] %}
+          <a href="assessment?name={{ assessment.id }}">
+            {% if assessment['completed'] %}
+              {# I18N: Shown in the student profile page, next to an assessment title. States whether the assessment has been completed. #}
+              {{ gettext('Completed') }}
+            {% else %}
+              {# I18N: Shown in the student profile page, next to an assignment title, as the link text for a self- or peer-reviewed assignment. #}
+              {{ gettext('View assignment') }}
+            {% endif %}
+          </a>
+        {% elif 'score' in assessment and assessment['score'] is defined %}
+          <span id="assessment-score-{{assessment['title']}}">{{ assessment['score'] }}</span>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+<!---------------------- END --------------------------------->
   {% if overall_score != None %}
     <tr>
       {# I18N: Table header for the student's overall score. #}
