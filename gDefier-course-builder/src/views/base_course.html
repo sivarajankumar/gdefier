@@ -73,12 +73,20 @@
             {# I18N: Navbar tab. #}
             <a href="student/home">{{ gettext('Progress') }}</a>
           </li>
+          	<!--------------- GDEFIER MODIFICATION ------------------------> 
+	        {% if gDefier_enabled %}      
+	          <li {% if navbar.gDefier %}class='active'{% endif %}>
+	            {# I18N: Navbar tab. #}
+	            <a href="gDefier/home">{{ gettext('G-Defier') }}</a>
+	          </li> 
+	        {% endif %}   
+			<!---------------------- END --------------------------------->
         {% else %}
           <li {% if navbar.registration %}class='active'{% endif %}>
             {# I18N: Navbar tab. #}
             <a href="register">{{ gettext('Registration') }}</a>
           </li>
-        {% endif %}
+        {% endif %}   
         {{course_info.base.before_navbar_ends | safe}}
       </ul>
     </div>
