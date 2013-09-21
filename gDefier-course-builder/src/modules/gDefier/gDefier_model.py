@@ -2,12 +2,14 @@
 
 __author__ = 'Diego Garcia (diego.gmartin@alumnos.uc3m.es)'
 
-import os
 import zipfile
 
+from common import tags
 from common import schema_fields
+
 from common.schema_fields import FieldRegistry
 from common.schema_fields import SchemaField
+
 from modules.khanex import khanex
 
 # Here are the defaults for a G-Defier module of a new course.
@@ -84,26 +86,30 @@ def create_gdefier_module_registry():
             extra_schema_dict_values={'className': 'sa-grader'})
     block_type.add_property(schema_fields.SchemaField(
         'block_title', 'Block Title', 'string',
-        extra_schema_dict_values={'className': 'sa-grader-text'}))
+        extra_schema_dict_values={'className': 'inputEx-Field content'}))
     block_type.add_property(schema_fields.SchemaField(
         'w_editor', 'Block Weight', 'integer',
-        extra_schema_dict_values={'className': 'sa-grader-text'}))
+        extra_schema_dict_values={'className': 'inputEx-Field content'}))
     block_type.add_property(schema_fields.SchemaField(
         'gdf_start_date', 'Start date', 'string',
-        extra_schema_dict_values={'className': 'sa-grader-text'},
+        extra_schema_dict_values={'className': 'inputEx-Field content'},
         description=str(DATE_FORMAT_DESCRIPTION)))
     block_type.add_property(schema_fields.SchemaField(
         'gdf_close_date', 'Deadline', 'string',
-        extra_schema_dict_values={'className': 'sa-grader-text'},
+        extra_schema_dict_values={'className': 'inputEx-Field content'},
         description=str(DATE_FORMAT_DESCRIPTION)))
     block_type.add_property(schema_fields.SchemaField(
         'question_cast', 'Question cast', 'html', optional=True,
-        extra_schema_dict_values={'className': 'sa-grader-feedback'}))
+        extra_schema_dict_values={
+            'supportCustomTags': tags.CAN_USE_DYNAMIC_TAGS.value,
+            'excludedCustomTags': tags.EditorBlacklists.ASSESSMENT_SCOPE,
+            'className': 'inputEx-Field html-content'}))
 
     blocks_array = schema_fields.FieldArray(
         'module:blocks', 'Blocks for the course', item_type=block_type,
         extra_schema_dict_values={
             'className': 'sa-grader-container',
+            #'sortable': 'true',
             'listAddLabel': 'Add a block',
             'listRemoveLabel': 'Delete this block'})
 
