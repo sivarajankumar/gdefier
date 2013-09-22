@@ -9,7 +9,6 @@ import pprint
 import json
 import yaml
 import logging
-from . import gDefier_model
 
 from controllers import utils
 from controllers import sites
@@ -25,6 +24,7 @@ from models import courses
 from models import roles
 from models import transforms
 from models.courses import deep_dict_merge
+from models import gDefier_model
 
 from tools import verify
 

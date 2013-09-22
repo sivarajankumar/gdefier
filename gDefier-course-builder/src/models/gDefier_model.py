@@ -3,6 +3,12 @@
 __author__ = 'Diego Garcia (diego.gmartin@alumnos.uc3m.es)'
 
 import zipfile
+import models
+from models import MemcacheManager
+import progress
+import review
+import transforms
+import vfs
 
 from common import tags
 from common import schema_fields
@@ -116,3 +122,123 @@ def create_gdefier_module_registry():
     module_opts.add_property(blocks_array)
     
     return reg
+
+class GDefier(object):
+    """Manages a G-Defier module and all of its components."""
+
+    @classmethod
+    def get_environ(cls, app_context):
+        """Returns currently defined course settings as a dictionary."""
+        pass
+
+
+    @classmethod
+    def _load(cls, app_context):
+        """Loads course data from persistence storage into this instance."""
+        pass
+
+    def __init__(self, handler, app_context=None):
+        self._app_context = app_context if app_context else handler.app_context
+        self._namespace = self._app_context.get_namespace_name()
+        self._model = self._load(self._app_context)
+        self._tracker = None
+        self._reviews_processor = None
+
+    @property
+    def app_context(self):
+        return self._app_context
+
+    def to_json(self):
+        return self._model.to_json()
+
+    def save(self):
+        return self._model.save()
+
+    def get_score(self, student, assessment_id):
+        """Gets a student's score for a particular assessment."""
+        assert self.is_valid_assessment_id(assessment_id)
+        scores = transforms.loads(student.scores) if student.scores else {}
+        return scores.get(assessment_id) if scores else None
+
+    def get_overall_score(self, student):
+        """Gets the overall course score for a student."""
+        score_list = self.get_all_scores(student)
+        overall_score = 0
+        total_weight = 0
+        for unit in score_list:
+            if not unit['human_graded']:
+                total_weight += unit['weight']
+                overall_score += unit['weight'] * unit['score']
+
+        if total_weight == 0:
+            return None
+
+        return int(float(overall_score) / total_weight)
+
+
+    def update_final_grades(self, student):
+        """Updates the final grades of the student."""
+        if (models.CAN_SHARE_STUDENT_PROFILE.value and
+            self.is_course_complete(student)):
+            overall_score = self.get_overall_score(student)
+            models.StudentProfileDAO.update(
+                student.user_id, student.email, final_grade=overall_score)
+
+    def get_overall_result(self, student):
+        """Gets the overall result based on a student's score profile."""
+        score = self.get_overall_score(student)
+        if score is None:
+            return None
+
+        # This can be replaced with a custom definition for an overall result
+        # string.
+        return 'pass' if self.get_overall_score(student) >= 70 else 'fail'
+
+    def get_all_scores(self, student):
+        """Gets all score data for a student.
+
+        Args:
+            student: the student whose scores should be retrieved.
+
+        Returns:
+            an array of dicts, each representing an assessment. Each dict has
+            the keys 'id', 'title', 'weight' and 'score' (if available),
+            representing the unit id, the assessment title, the weight
+            contributed by the assessment to the final score, and the
+            assessment score.
+        """
+        assessment_list = self.get_assessment_list()
+        scores = transforms.loads(student.scores) if student.scores else {}
+
+        unit_progress = self.get_progress_tracker().get_unit_progress(student)
+
+        assessment_score_list = []
+        for unit in assessment_list:
+            # Compute the weight for this assessment.
+            weight = 0
+            if hasattr(unit, 'weight'):
+                weight = unit.weight
+
+            completed = unit_progress[unit.unit_id]
+
+            # If a human-reviewed assessment is completed, ensure that the
+            # required reviews have also been completed.
+            if completed and self.needs_human_grader(unit):
+                reviews = self.get_reviews_processor().get_review_steps_by(
+                    unit.unit_id, student.get_key())
+                review_min_count = unit.workflow.get_review_min_count()
+                if not review.ReviewUtils.has_completed_enough_reviews(
+                        reviews, review_min_count):
+                    completed = False
+
+            assessment_score_list.append({
+                'id': str(unit.unit_id),
+                'title': unit.title,
+                'weight': weight,
+                'completed': completed,
+                'human_graded': self.needs_human_grader(unit),
+                'score': (scores[str(unit.unit_id)]
+                          if str(unit.unit_id) in scores else 0),
+            })
+
+        return assessment_score_list
