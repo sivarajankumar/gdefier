@@ -50,6 +50,38 @@ def get_gDefier_config_filename(self):
         filename = sites.abspath(self.app_context.get_home_folder(),
                                   DFR_CONFIG_FILENAME)
         return filename
+    
+def get_course_dict():
+        return get_environ2()
+    
+def get_environ2():
+    """Returns currently defined course settings as a dictionary."""
+    gDefier_yaml = None
+    gDefier_yaml_dict = None
+    
+    ns = ApplicationContext.get_namespace_name_for_request()
+    app_context = sites.get_app_context_for_namespace(ns)
+
+    course_data_filename = sites.abspath(app_context.get_home_folder(), DFR_CONFIG_FILENAME)
+
+    if app_context.fs.isfile(course_data_filename):
+        gDefier_yaml = app_context.fs.open(course_data_filename)
+    if not gDefier_yaml:
+        return deep_dict_merge(gDefier_model.DEFAULT_COURSE_GDEFIER_DICT,
+                               [])
+    try:
+        gDefier_yaml_dict = yaml.safe_load(
+            gDefier_yaml.read().decode('utf-8'))
+    except Exception as e:  # pylint: disable-msg=broad-except
+        logging.info(
+            'Error: gDefier.yaml file at %s not accessible, '
+            'loading defaults. %s', course_data_filename, e)
+
+    if not gDefier_yaml_dict:
+        return deep_dict_merge(gDefier_model.DEFAULT_COURSE_GDEFIER_DICT,
+                               [])
+    return deep_dict_merge(
+        gDefier_yaml_dict, gDefier_model.DEFAULT_COURSE_GDEFIER_DICT)
 
 class StudentDefierHandler(BaseHandler):
     """Handlers of gDefier Module for student workspace"""
@@ -62,15 +94,21 @@ class StudentDefierHandler(BaseHandler):
                      GCB_GDEFIER_FOLDER_NAME)
         
         course = sites.get_course_for_current_request()
+
         if not course.get_slug().split("_")[-1] == "DFR":
             page = 'templates/gDefier_error.html'
             self.template_value['error_code'] = 'disabled_gDefier_module'
             self.template_value['is_dashboard'] = False
         else:
             page = 'templates/gDefier.html'
+
+        # Render JSON response.
+        json_payload = transforms.dict_to_json(
+            get_course_dict(),[])
         
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
+        self.template_value['entity'] = str(json_payload)
         self.render(template)
 
 class GDefierDashboardHandler(object):
@@ -172,9 +210,6 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
     REGISTORY = gDefier_model.create_gdefier_module_registry()
     
     URI = '/rest/course/gDefier'
-    
-    def get_course_dict(self):
-        return self.get_environ2(self)
 
     @classmethod
     def validate_content(cls, content):
@@ -207,7 +242,7 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
         # Prepare data.
         entity = {}
         GDefierSettingsRESTHandler.REGISTORY.convert_entity_to_json_entity(
-            self.get_course_dict(), entity)
+            get_course_dict(), entity)
 
         # Render JSON response.
         json_payload = transforms.dict_to_json(
@@ -242,7 +277,7 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
         GDefierSettingsRESTHandler.REGISTORY.convert_json_to_entity(
             transforms.loads(payload), request_data)
 
-        entity = courses.deep_dict_merge(request_data, self.get_course_dict())
+        entity = courses.deep_dict_merge(request_data, get_course_dict())
         content = yaml.safe_dump(entity)
 
         try:
@@ -259,36 +294,6 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
 
         # Send reply.
         transforms.send_json_response(self, 200, 'Saved.')
-        
-
-    def get_environ2(self, app_context2):
-        """Returns currently defined course settings as a dictionary."""
-        gDefier_yaml = None
-        gDefier_yaml_dict = None
-        
-        ns = ApplicationContext.get_namespace_name_for_request()
-        app_context = sites.get_app_context_for_namespace(ns)
-
-        course_data_filename = sites.abspath(app_context.get_home_folder(), DFR_CONFIG_FILENAME)
-
-        if app_context.fs.isfile(course_data_filename):
-            gDefier_yaml = app_context.fs.open(course_data_filename)
-        if not gDefier_yaml:
-            return deep_dict_merge(gDefier_model.DEFAULT_COURSE_GDEFIER_DICT,
-                                   [])
-        try:
-            gDefier_yaml_dict = yaml.safe_load(
-                gDefier_yaml.read().decode('utf-8'))
-        except Exception as e:  # pylint: disable-msg=broad-except
-            logging.info(
-                'Error: gDefier.yaml file at %s not accessible, '
-                'loading defaults. %s', course_data_filename, e)
-  
-        if not gDefier_yaml_dict:
-            return deep_dict_merge(gDefier_model.DEFAULT_COURSE_GDEFIER_DICT,
-                                   [])
-        return deep_dict_merge(
-            gDefier_yaml_dict, gDefier_model.DEFAULT_COURSE_GDEFIER_DICT)
         
 
 def register_module():
