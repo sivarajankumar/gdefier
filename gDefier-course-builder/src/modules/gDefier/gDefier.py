@@ -101,14 +101,10 @@ class StudentDefierHandler(BaseHandler):
             self.template_value['is_dashboard'] = False
         else:
             page = 'templates/gDefier.html'
-
-        # Render JSON response.
-        json_payload = transforms.dict_to_json(
-            get_course_dict(),[])
         
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
-        self.template_value['entity'] = str(json_payload)
+        self.template_value['entity'] = get_course_dict()
         self.render(template)
 
 class GDefierDashboardHandler(object):
@@ -248,7 +244,7 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
         json_payload = transforms.dict_to_json(
             entity,
             GDefierSettingsRESTHandler.REGISTORY.get_json_schema_dict())
-        
+
         transforms.send_json_response(
             self, 200, 'Success.',
             payload_dict=json_payload,
