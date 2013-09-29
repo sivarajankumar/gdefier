@@ -18,6 +18,11 @@ from common.schema_fields import SchemaField
 
 from modules.khanex import khanex
 
+from google.appengine.ext import db
+from google.appengine.ext.db import polymodel
+
+from entities import BaseEntity
+
 # Here are the defaults for a G-Defier module of a new course.
 DEFAULT_COURSE_GDEFIER_DICT = {
     'module': {
@@ -70,8 +75,11 @@ def create_gdefier_module_registry():
     module_opts.add_property(SchemaField(
         'module:n_blocks', 'Number of blocks', 'integer', select_data=n_blocks_options))
     module_opts.add_property(SchemaField(
-        'module:n_challenges', 'Challenges', 'integer',
-        description='Number of challenges to pass the blocks'))
+        'module:n_defies', 'Defies', 'integer',
+        description='Number of defies to pass the blocks'))
+    module_opts.add_property(SchemaField(
+        'module:max_defies', 'Max Defies', 'integer',
+        description='Maximum number of playble defies in a block to get its score'))
     module_opts.add_property(SchemaField(
         'module:rally_block', 'Make Rally block active', 'boolean'))
     module_opts.add_property(SchemaField(
@@ -85,7 +93,19 @@ def create_gdefier_module_registry():
         'module:w_editor', 'Editor Weight', 'integer'))    
     module_opts.add_property(SchemaField(
         'module:n_editor', 'Exercises to upload', 'integer',
-        description='Minimun Number of exercises to upload necessary to get Editor block'))
+        description='Minimum Number of exercises to upload necessary to get Editor block'))
+
+    defy_type = module_opts.add_sub_registry('defy', 'Defy config')
+
+    defy_type.add_property(SchemaField(
+        'module:defy:n_round', 'Number of rounds', 'integer',
+        description='Number of rounds into each defy')) 
+    defy_type.add_property(SchemaField(
+        'module:defy:time2accept', 'Time 2 accept', 'integer',
+        description='Time in hours to accept a defy request'))
+    defy_type.add_property(SchemaField(
+        'module:defy:round_time', 'Round time', 'integer',
+        description='Time in minutes to respond into each round'))
     
     block_type = schema_fields.FieldRegistry(
             'Question Block',
@@ -123,122 +143,53 @@ def create_gdefier_module_registry():
     
     return reg
 
-class GDefier(object):
-    """Manages a G-Defier module and all of its components."""
-
-    @classmethod
-    def get_environ(cls, app_context):
-        """Returns currently defined course settings as a dictionary."""
-        pass
-
-
-    @classmethod
-    def _load(cls, app_context):
-        """Loads course data from persistence storage into this instance."""
-        pass
-
-    def __init__(self, handler, app_context=None):
-        self._app_context = app_context if app_context else handler.app_context
-        self._namespace = self._app_context.get_namespace_name()
-        self._model = self._load(self._app_context)
-        self._tracker = None
-        self._reviews_processor = None
-
+class GDefierGroup(db.Model):
+    name = db.StringProperty(indexed=True, required=True)
     @property
-    def app_context(self):
-        return self._app_context
+    def members(self):
+        return GDefierPlayer.gql("WHERE group = :1", self.key())
 
-    def to_json(self):
-        return self._model.to_json()
+class GDefierPlayer(BaseEntity):
+    name = db.StringProperty(indexed=True, required=True)
+    total_score = db.IntegerProperty(indexed=True, required=True, default=0)
+    
+    """r_on = db.BooleanProperty(indexed=False, default=False)
+    r_count = db.IntegerProperty(indexed=False, default=0)
+    r_done = db.BooleanProperty(indexed=False, default=False)
+    e_on = db.BooleanProperty(indexed=False, default=False)
+    e_rallies = db.ListProperty(int)
+    e_done = db.BooleanProperty(indexed=False, default=False)"""
+    
+    # Group affiliation
+    group = db.ListProperty(db.Key)
 
-    def save(self):
-        return self._model.save()
+class GDefierBlock(db.Model):
+    player = db.ReferenceProperty(GDefierPlayer,
+                               collection_name='blocks')
+    activated = db.BooleanProperty(indexed=False, default=False)
+    done = db.BooleanProperty(indexed=False, default=False)
+    wins = db.IntegerProperty(indexed=False, default=0)
+    lost = db.IntegerProperty(indexed=False, default=0)
+    request = db.ListProperty(str)
+    sends = db.ListProperty(str)
+    
+class GDefierBoard(db.Model):
+    name = db.StringProperty(indexed=True, required=True)  
+    @property
+    def members(self):
+        return GDefierDefy.gql("WHERE board = :1", self.key())
 
-    def get_score(self, student, assessment_id):
-        """Gets a student's score for a particular assessment."""
-        assert self.is_valid_assessment_id(assessment_id)
-        scores = transforms.loads(student.scores) if student.scores else {}
-        return scores.get(assessment_id) if scores else None
-
-    def get_overall_score(self, student):
-        """Gets the overall course score for a student."""
-        score_list = self.get_all_scores(student)
-        overall_score = 0
-        total_weight = 0
-        for unit in score_list:
-            if not unit['human_graded']:
-                total_weight += unit['weight']
-                overall_score += unit['weight'] * unit['score']
-
-        if total_weight == 0:
-            return None
-
-        return int(float(overall_score) / total_weight)
-
-
-    def update_final_grades(self, student):
-        """Updates the final grades of the student."""
-        if (models.CAN_SHARE_STUDENT_PROFILE.value and
-            self.is_course_complete(student)):
-            overall_score = self.get_overall_score(student)
-            models.StudentProfileDAO.update(
-                student.user_id, student.email, final_grade=overall_score)
-
-    def get_overall_result(self, student):
-        """Gets the overall result based on a student's score profile."""
-        score = self.get_overall_score(student)
-        if score is None:
-            return None
-
-        # This can be replaced with a custom definition for an overall result
-        # string.
-        return 'pass' if self.get_overall_score(student) >= 70 else 'fail'
-
-    def get_all_scores(self, student):
-        """Gets all score data for a student.
-
-        Args:
-            student: the student whose scores should be retrieved.
-
-        Returns:
-            an array of dicts, each representing an assessment. Each dict has
-            the keys 'id', 'title', 'weight' and 'score' (if available),
-            representing the unit id, the assessment title, the weight
-            contributed by the assessment to the final score, and the
-            assessment score.
-        """
-        assessment_list = self.get_assessment_list()
-        scores = transforms.loads(student.scores) if student.scores else {}
-
-        unit_progress = self.get_progress_tracker().get_unit_progress(student)
-
-        assessment_score_list = []
-        for unit in assessment_list:
-            # Compute the weight for this assessment.
-            weight = 0
-            if hasattr(unit, 'weight'):
-                weight = unit.weight
-
-            completed = unit_progress[unit.unit_id]
-
-            # If a human-reviewed assessment is completed, ensure that the
-            # required reviews have also been completed.
-            if completed and self.needs_human_grader(unit):
-                reviews = self.get_reviews_processor().get_review_steps_by(
-                    unit.unit_id, student.get_key())
-                review_min_count = unit.workflow.get_review_min_count()
-                if not review.ReviewUtils.has_completed_enough_reviews(
-                        reviews, review_min_count):
-                    completed = False
-
-            assessment_score_list.append({
-                'id': str(unit.unit_id),
-                'title': unit.title,
-                'weight': weight,
-                'completed': completed,
-                'human_graded': self.needs_human_grader(unit),
-                'score': (scores[str(unit.unit_id)]
-                          if str(unit.unit_id) in scores else 0),
-            })
-
-        return assessment_score_list
+class GDefierDefy(db.Model):
+    board = db.ReferenceProperty(GDefierBoard,
+                           collection_name='defies')
+    rname = db.StringProperty(indexed=True, required=True)
+    lname = db.StringProperty(indexed=True, required=True)
+    turn = db.StringProperty(indexed=True, required=True,
+                             choices=set(["r","l"]))
+    rscore = db.IntegerProperty(indexed=False, default=0)
+    lscore = db.IntegerProperty(indexed=False, default=0)
+    rtime = db.TimeProperty(indexed=False)
+    ltime = db.TimeProperty(indexed=False)
+    
+    # Board affiliation
+    board = db.ListProperty(db.Key)
