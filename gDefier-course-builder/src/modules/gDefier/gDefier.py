@@ -9,6 +9,8 @@ import pprint
 import json
 import yaml
 import logging
+import datetime
+from google.appengine.ext import db 
 
 from controllers import utils
 from controllers import sites
@@ -102,6 +104,42 @@ class StudentDefierHandler(BaseHandler):
         else:
             page = 'templates/gDefier.html'
         
+        
+        #group = gDefier_model.GDefierGroup(name=course.get_namespace_name())
+        #group.put()
+        """scott = gDefier_model.GDefierPlayer(name='Scott')
+        scott.put()
+        celia = gDefier_model.GDefierPlayer(name='Celia')
+        celia.put()
+        gDefier_model.GDefierBlock(player=scott,
+                    wins=0,
+                    lost=5).put()
+        gDefier_model.GDefierBlock(player=celia,
+                    wins=4,
+                    lost=1).put()
+        gDefier_model.GDefierBlock(player=celia,
+                    wins=0,
+                    lost=10).put()
+        
+        """
+        results = db.GqlQuery("SELECT * FROM GDefierGroup")
+        
+        for x in results:
+            if x.name == course.get_namespace_name():
+                y = x.members
+                for z in y:
+                    print z.name
+
+        """course = gDefier_model.GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+        celia = gDefier_model.GDefierPlayer.gql("WHERE name = 'Celia'").get()
+        
+        print course.key()
+        print celia.group
+        if course.key() not in celia.group:
+            print "xxxxxxx"
+            celia.group.append(course.key())
+            celia.put()"""
+                    
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['entity'] = get_course_dict()
