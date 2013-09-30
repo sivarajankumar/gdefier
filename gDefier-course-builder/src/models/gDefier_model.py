@@ -10,6 +10,8 @@ import review
 import transforms
 import vfs
 
+from controllers import sites
+
 from common import tags
 from common import schema_fields
 
@@ -162,10 +164,12 @@ class GDefierPlayer(BaseEntity):
     
     # Group affiliation
     group = db.ListProperty(db.Key)
+        
 
 class GDefierBlock(db.Model):
     player = db.ReferenceProperty(GDefierPlayer,
                                collection_name='blocks')
+    blockID = db.StringProperty(indexed=True, required=True)
     activated = db.BooleanProperty(indexed=False, default=False)
     done = db.BooleanProperty(indexed=False, default=False)
     wins = db.IntegerProperty(indexed=False, default=0)
@@ -193,3 +197,61 @@ class GDefierDefy(db.Model):
     
     # Board affiliation
     board = db.ListProperty(db.Key)
+    
+def create_player(self):
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    if not alumn:
+        print "user created"
+        #Creating and adding to correspondent group
+        course = sites.get_course_for_current_request()
+        group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+        alumn = GDefierPlayer(name=nick, group=[group.key()]).put()
+        
+def delete_player(self):
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    if alumn:
+        print "Deleting player..."
+        print "Player with blocks?"
+        for block in alumn.blocks:
+            "Deleting blocks..."
+            delete_block(self, block.blockID)
+        alumn.delete()
+    
+def add_block_to_player(self, block_ID):
+    nick = self.get_user().nickname()
+    block = GDefierBlock.gql("WHERE blockID = '" + block_ID +"'").get()
+    if block == None:
+        alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+        if alumn:
+            print "Adding block to player..."
+            GDefierBlock(player=alumn, blockID=block_ID).put()
+    
+def delete_block(self, block_ID):
+    block = GDefierBlock.gql("WHERE blockID = '" + block_ID +"'").get()
+    if block:
+        print "Deleting block with ID -->", block.blockID
+        block.delete()
+
+def create_group(self):
+    course = sites.get_course_for_current_request()
+    group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+    if not group: 
+        GDefierGroup(name=course.get_namespace_name()).put()
+    
+def get_players(self):
+    course = sites.get_course_for_current_request().get_namespace_name()
+    results = db.GqlQuery("SELECT * FROM GDefierGroup WHERE name ='"+course+"'")
+    for x in results:
+        players = x.members
+        return players
+                
+"""def add_to_group(self, nick):
+    course = sites.get_course_for_current_request()
+    group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    if group.key() not in alumn.group:
+        alumn.group.append(group.key())
+        alumn.put()"""
+        

@@ -36,7 +36,6 @@ from modules.dashboard import filer
 from modules.dashboard import messages
 from modules.dashboard.course_settings import CourseSettingsRights
 
-
 from google.appengine.api import users
 
 GCB_GDEFIER_FOLDER_NAME = os.path.normpath('/modules/gDefier/')
@@ -103,42 +102,24 @@ class StudentDefierHandler(BaseHandler):
             self.template_value['is_dashboard'] = False
         else:
             page = 'templates/gDefier.html'
+                
+        y = gDefier_model.get_players(self)
+        for z in y:
+            print z.name         
+        #gDefier_model.create_group(self)
+        gDefier_model.create_player(self)
+        #gDefier_model.delete_player(self)
+        #gDefier_model.add_block_to_player(self, "xx")
+        #gDefier_model.add_block_to_player(self, "yy")
+        #gDefier_model.delete_block(self, "xx")
+        #gDefier_model.delete_block(self, "yy")
         
-        
-        #group = gDefier_model.GDefierGroup(name=course.get_namespace_name())
-        #group.put()
-        """scott = gDefier_model.GDefierPlayer(name='Scott')
-        scott.put()
-        celia = gDefier_model.GDefierPlayer(name='Celia')
-        celia.put()
-        gDefier_model.GDefierBlock(player=scott,
-                    wins=0,
-                    lost=5).put()
-        gDefier_model.GDefierBlock(player=celia,
-                    wins=4,
-                    lost=1).put()
-        gDefier_model.GDefierBlock(player=celia,
-                    wins=0,
-                    lost=10).put()
-        
-        """
-        results = db.GqlQuery("SELECT * FROM GDefierGroup")
-        
+        """results = db.GqlQuery("SELECT * FROM GDefierGroup")
         for x in results:
-            if x.name == course.get_namespace_name():
-                y = x.members
-                for z in y:
-                    print z.name
-
-        """course = gDefier_model.GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
-        celia = gDefier_model.GDefierPlayer.gql("WHERE name = 'Celia'").get()
-        
-        print course.key()
-        print celia.group
-        if course.key() not in celia.group:
-            print "xxxxxxx"
-            celia.group.append(course.key())
-            celia.put()"""
+            print x
+        results = db.GqlQuery("SELECT * FROM GDefierBlock")
+        for x in results:
+            print x.blockID"""
                     
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
