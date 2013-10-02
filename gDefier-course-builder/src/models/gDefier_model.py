@@ -3,14 +3,6 @@
 __author__ = 'Diego Garcia (diego.gmartin@alumnos.uc3m.es)'
 
 import zipfile
-import models
-from models import MemcacheManager
-import progress
-import review
-import transforms
-import vfs
-
-from controllers import sites
 
 from common import tags
 from common import schema_fields
@@ -18,10 +10,11 @@ from common import schema_fields
 from common.schema_fields import FieldRegistry
 from common.schema_fields import SchemaField
 
+from controllers import sites
+
 from modules.khanex import khanex
 
 from google.appengine.ext import db
-from google.appengine.ext.db import polymodel
 
 from entities import BaseEntity
 
@@ -205,8 +198,13 @@ def create_player(self):
         print "user created"
         #Creating and adding to correspondent group
         course = sites.get_course_for_current_request()
-        group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
-        alumn = GDefierPlayer(name=nick, group=[group.key()]).put()
+        aux_group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+        if not aux_group:
+            print "First player..."
+            aux_group = create_group(self)
+        else:
+            aux_group=aux_group.key()
+        GDefierPlayer(name=nick, group=[aux_group]).put()
         
 def delete_player(self):
     nick = self.get_user().nickname()
@@ -237,8 +235,12 @@ def delete_block(self, block_ID):
 def create_group(self):
     course = sites.get_course_for_current_request()
     group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
-    if not group: 
-        GDefierGroup(name=course.get_namespace_name()).put()
+    print group
+    if not group:
+        print "Creating group..." 
+        aux_group = GDefierGroup(name=course.get_namespace_name()).put()
+        return aux_group
+    return group
     
 def get_players(self):
     course = sites.get_course_for_current_request().get_namespace_name()
@@ -246,6 +248,13 @@ def get_players(self):
     for x in results:
         players = x.members
         return players
+
+def player_exist(self):
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    if not alumn:
+        return True
+    return False
                 
 """def add_to_group(self, nick):
     course = sites.get_course_for_current_request()

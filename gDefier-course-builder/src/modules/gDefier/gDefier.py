@@ -10,7 +10,7 @@ import json
 import yaml
 import logging
 import datetime
-from google.appengine.ext import db 
+from google.appengine.ext import db
 
 from controllers import utils
 from controllers import sites
@@ -83,6 +83,13 @@ def get_environ2():
                                [])
     return deep_dict_merge(
         gDefier_yaml_dict, gDefier_model.DEFAULT_COURSE_GDEFIER_DICT)
+    
+        
+class RegisterDefierHandler(BaseHandler):
+    
+    def post(self):
+        gDefier_model.create_player(self)
+        self.redirect('/gDefier/home')
 
 class StudentDefierHandler(BaseHandler):
     """Handlers of gDefier Module for student workspace"""
@@ -104,23 +111,36 @@ class StudentDefierHandler(BaseHandler):
             page = 'templates/gDefier.html'
                 
         y = gDefier_model.get_players(self)
-        for z in y:
-            print z.name         
+        if y:
+            for z in y:
+                print z.name
+                for block in z.blocks:
+                    print block.blockID  
+
         #gDefier_model.create_group(self)
-        gDefier_model.create_player(self)
+        
+        #gDefier_model.create_player(self)
         #gDefier_model.delete_player(self)
-        #gDefier_model.add_block_to_player(self, "xx")
-        #gDefier_model.add_block_to_player(self, "yy")
+        #gDefier_model.add_block_to_player(self, "888")
+        #gDefier_model.add_block_to_player(self, "777")
         #gDefier_model.delete_block(self, "xx")
         #gDefier_model.delete_block(self, "yy")
         
-        """results = db.GqlQuery("SELECT * FROM GDefierGroup")
+        results = db.GqlQuery("SELECT * FROM GDefierGroup")
+        print results.get()
+        if results.get() == None:
+            print "No group"
         for x in results:
-            print x
-        results = db.GqlQuery("SELECT * FROM GDefierBlock")
+            print x.name
+        """results = db.GqlQuery("SELECT * FROM GDefierBlock")
         for x in results:
             print x.blockID"""
-                    
+        
+        self.template_value['gDefier_transient_student'] = gDefier_model.player_exist(self)
+        
+        x = get_course_dict()
+        print x['module']['n_blocks']
+        
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['entity'] = get_course_dict()
@@ -320,6 +340,7 @@ def register_module():
     # setup routes
     gDefier_routes = [
         ('/gDefier/home', StudentDefierHandler),
+        ('/gdefier/register', RegisterDefierHandler),
         ]
 
     global custom_module
