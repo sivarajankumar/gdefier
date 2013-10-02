@@ -6,6 +6,12 @@
 {% endblock subtitle %}
 
 {% block top_content %}
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      {% if gDefier_transient_student %}
+        {% include '../modules/gDefier/templates/gDefier_registration_module.html' %}
+      {% endif %}
+    </div>
 {% endblock %}
 
 {% block main_content %}
