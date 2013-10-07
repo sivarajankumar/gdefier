@@ -501,9 +501,12 @@ class RegisterHandler(BaseHandler):
 
         Student.add_new_student_for_current_user(
             name, transforms.dumps(self.request.POST.items()))
-        # Render registration confirmation page
-        self.redirect('/course#registration_confirmation')
-
+        
+        course = sites.get_course_for_current_request()
+        if course.get_slug().split("_")[-1] == "DFR":
+            self.redirect('/gDefier/register')
+        else:
+            self.redirect('/course#registration_confirmation')
 
 class ForumHandler(BaseHandler):
     """Handler for forum page."""

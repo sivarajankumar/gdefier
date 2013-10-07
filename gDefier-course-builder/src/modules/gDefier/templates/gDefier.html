@@ -6,22 +6,34 @@
 {% endblock subtitle %}
 
 {% block top_content %}
-  <div class="gcb-cols">
-    <div class="gcb-col-11 gcb-aside">
-      {% if gDefier_transient_student %}
-        {% include '../modules/gDefier/templates/gDefier_registration_module.html' %}
-      {% endif %}
-    </div>
+  {% if gDefier_transient_student %}
+    {% include '../modules/gDefier/templates/gDefier_registration_module.html' %}
+  {% endif %}
 {% endblock %}
 
 {% block main_content %}
+  {% if not gDefier_transient_student %}
+	{% for number in range(entity.module.n_blocks) %}
+	  <div class="gcb-col-10">
+	    <center>
+	       <form action='gDefier/block/{{number+1}}' method='get'>
+	         <button class="gcb-button gcb-button-large" type="submit">
+	           {# I18N: G-Defier start block button on the main page of the module. #}
+	           Block {{number + 1}}
+	         </button>
+	       </form>
+	    </center>
+	  </div>
+	  <br>
+	{% endfor %}
+  {% endif %}
 
  <div style="margin-top: 20px;" class="gcb-cols">
       <div class="gcb-col-1">
       </div>
       <div class="gcb-col-9">
 
-        <h1 class="gcb-schedule-headers">
+        <h1 class="gcb-unit-header">
           {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
           {{ gettext('G-Defier Module Settings') }}
         </h1>
@@ -30,8 +42,7 @@
 		    {% for key in entity.module recursive %}
 		        <li>{{ key }} : {{ entity.module[key] }}</li>	
 		    {% endfor %}
-        </div>
-
+		  </div>
       </div>
     </div>
 
