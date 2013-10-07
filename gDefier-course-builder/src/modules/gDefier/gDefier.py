@@ -2,6 +2,7 @@
 
 __author__ = 'Diego Garcia (diego.gmartin@alumnos.uc3m.es)'
 
+import webapp2
 import jinja2
 import jinja2.exceptions
 import os
@@ -86,10 +87,69 @@ def get_environ2():
     
         
 class RegisterDefierHandler(BaseHandler):
+
+    def get(self):
+        gDefier_model.create_player(self)
+        
+        course_info = get_course_dict()
+        blocks =  course_info['module']['blocks']
+        gDefier_model.create_board(self, blocks)
+        
+        self.redirect('/course#registration_confirmation')
     
     def post(self):
-        gDefier_model.create_player(self)
-        self.redirect('/gDefier/home')
+        course_info = get_course_dict()
+        blocks =  course_info['module']['blocks']
+        if blocks:
+            for b in blocks:
+                gDefier_model.add_block_to_player(self, b['block_title'])
+            self.redirect('/gDefier/home?registered=yes')
+        else:
+            self.redirect('/gDefier/home')   
+        
+class BlocksHandler(BaseHandler):
+    
+    def send_request(self, user, b_id):
+        
+        course_info = get_course_dict()
+        b_info =  course_info['module']['blocks'][b_id-1]
+        gDefier_model.add_request_challenge(self, user, b_info['block_title'])
+        
+        self.redirect('/gDefier/block/' + str(b_id))
+    
+    def get(self):
+        if not self.personalize_page_and_get_enrolled():
+            return
+        
+        b_id = int(sites.get_path_info().split("/")[-1])
+        
+        course_info = get_course_dict()
+        b_info =  course_info['module']['blocks'][b_id-1]
+
+        
+        # Sending an invitation to create challenge
+        if self.request.get('request'):
+            self.send_request(self.request.get('request'), b_id)
+
+        block = gDefier_model.add_block_to_player(self, b_info['block_title'])
+        
+        b_stats = gDefier_model.to_dict(block)
+        b_stats.pop('player')
+        b_info.pop('question_cast')
+        
+        path = sites.abspath(self.app_context.get_home_folder(),
+                     GCB_GDEFIER_FOLDER_NAME)
+        page = 'templates/gDefier_blocks.html'
+        
+        players = gDefier_model.get_players(self)
+         
+        template = self.get_template(page, additional_dirs=[path])
+        self.template_value['navbar'] = {'gDefier': True}
+        self.template_value['b_info'] = b_info
+        self.template_value['b_stats'] = b_stats
+        self.template_value['players'] = players
+        self.template_value['user'] = self.get_user().nickname()
+        self.render(template)
 
 class StudentDefierHandler(BaseHandler):
     """Handlers of gDefier Module for student workspace"""
@@ -109,37 +169,18 @@ class StudentDefierHandler(BaseHandler):
             self.template_value['is_dashboard'] = False
         else:
             page = 'templates/gDefier.html'
+        
+        # Patch to double apparition of registration
+        registration = None
+        if gDefier_model.player_has_blocks(self):
+            if self.request.get('registered')=='yes':
+                registration = False
+            else:
+                registration = True
+        else:
+            registration = False
                 
-        y = gDefier_model.get_players(self)
-        if y:
-            for z in y:
-                print z.name
-                for block in z.blocks:
-                    print block.blockID  
-
-        #gDefier_model.create_group(self)
-        
-        #gDefier_model.create_player(self)
-        #gDefier_model.delete_player(self)
-        #gDefier_model.add_block_to_player(self, "888")
-        #gDefier_model.add_block_to_player(self, "777")
-        #gDefier_model.delete_block(self, "xx")
-        #gDefier_model.delete_block(self, "yy")
-        
-        results = db.GqlQuery("SELECT * FROM GDefierGroup")
-        print results.get()
-        if results.get() == None:
-            print "No group"
-        for x in results:
-            print x.name
-        """results = db.GqlQuery("SELECT * FROM GDefierBlock")
-        for x in results:
-            print x.blockID"""
-        
-        self.template_value['gDefier_transient_student'] = gDefier_model.player_exist(self)
-        
-        x = get_course_dict()
-        print x['module']['n_blocks']
+        self.template_value['gDefier_transient_student'] = registration
         
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
@@ -329,7 +370,6 @@ class GDefierSettingsRESTHandler(BaseRESTHandler):
 
         # Send reply.
         transforms.send_json_response(self, 200, 'Saved.')
-        
 
 def register_module():
     """Registers this module in the registry."""
@@ -340,7 +380,10 @@ def register_module():
     # setup routes
     gDefier_routes = [
         ('/gDefier/home', StudentDefierHandler),
-        ('/gdefier/register', RegisterDefierHandler),
+        ('/gDefier/register', RegisterDefierHandler),
+        ('/gDefier/block/1', BlocksHandler),
+        ('/gDefier/block/2', BlocksHandler),
+        ('/gDefier/block/3', BlocksHandler),
         ]
 
     global custom_module

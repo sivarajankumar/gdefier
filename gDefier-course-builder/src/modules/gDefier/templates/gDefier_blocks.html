@@ -1,0 +1,74 @@
+{% extends 'base_course.html' %}
+
+{% block subtitle %}
+{# I18N: Title of the G-Defier block webpage. #}
+Block "{{ b_info.block_title }}"
+{% endblock subtitle %}
+
+{% block top_content %}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="parent">
+  <div class="left">
+       <h1 class="gcb-unit-header">
+          Block "{{ b_info.block_title }}" Stats
+        </h1>
+	    {% for key in b_stats recursive %}
+	        <li>{{ key }} : {{ b_stats[key] }}</li>	
+	    {% endfor %}
+  </div>
+  <div clas="right">
+        <h1 class="gcb-unit-header">
+          Block "{{ b_info.block_title }}" Info
+        </h1>
+	    {% for key in b_info recursive %}
+	        <li>{{ key }} : {{ b_info[key] }}</li>	
+	    {% endfor %}
+  </div>
+</div>
+
+</br>
+
+<script>
+function displayResult()
+{
+	var x=document.getElementById("challenge2").selectedIndex;
+	var y=document.getElementById("challenge2").options;
+	window.location = window.location + '?request=' + y[x].text;
+}
+</script>
+
+Please choose an opponent to send an invitation:
+<form id="form1" method='get'>
+	<select size="{{players.count()-1}}" id="challenge2">
+		{% for p in players %}
+		{% if p.name != user %}
+			<option>{{p.name}}</option>
+		{% endif %}
+		{% endfor %}
+	</select>
+</form>
+<button type="button" onclick="displayResult()">Send Invitation</button>
+
+<style type="text/css">
+.parent{
+    width:100%;
+    heigth: 100%;
+    min-height:100%;
+    overflow:hidden;
+}
+.left{
+    float:left;
+    width:50%;
+    height: 100%;
+    overflow:hidden;
+    }
+.right{
+    width:50%;
+    height: 100%;    
+    overflow:hidden;
+}   
+</style>
+{% endblock %}

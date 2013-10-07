@@ -16,8 +16,6 @@ from modules.khanex import khanex
 
 from google.appengine.ext import db
 
-from entities import BaseEntity
-
 # Here are the defaults for a G-Defier module of a new course.
 DEFAULT_COURSE_GDEFIER_DICT = {
     'module': {
@@ -109,7 +107,7 @@ def create_gdefier_module_registry():
         'block_title', 'Block Title', 'string',
         extra_schema_dict_values={'className': 'inputEx-Field content'}))
     block_type.add_property(schema_fields.SchemaField(
-        'w_editor', 'Block Weight', 'integer',
+        'w_block', 'Block Weight', 'integer',
         extra_schema_dict_values={'className': 'inputEx-Field content'}))
     block_type.add_property(schema_fields.SchemaField(
         'gdf_start_date', 'Start date', 'string',
@@ -144,7 +142,7 @@ class GDefierGroup(db.Model):
     def members(self):
         return GDefierPlayer.gql("WHERE group = :1", self.key())
 
-class GDefierPlayer(BaseEntity):
+class GDefierPlayer(db.Model):
     name = db.StringProperty(indexed=True, required=True)
     total_score = db.IntegerProperty(indexed=True, required=True, default=0)
     
@@ -175,9 +173,14 @@ class GDefierBoard(db.Model):
     @property
     def members(self):
         return GDefierDefy.gql("WHERE board = :1", self.key())
+    
+class GDefierBoardBlock(db.Model):
+    blockID = db.StringProperty(indexed=True, required=True)  
+    # Board affiliation
+    board = db.ListProperty(db.Key)
 
 class GDefierDefy(db.Model):
-    board = db.ReferenceProperty(GDefierBoard,
+    board = db.ReferenceProperty(GDefierBoardBlock,
                            collection_name='defies')
     rname = db.StringProperty(indexed=True, required=True)
     lname = db.StringProperty(indexed=True, required=True)
@@ -187,10 +190,7 @@ class GDefierDefy(db.Model):
     lscore = db.IntegerProperty(indexed=False, default=0)
     rtime = db.TimeProperty(indexed=False)
     ltime = db.TimeProperty(indexed=False)
-    
-    # Board affiliation
-    board = db.ListProperty(db.Key)
-    
+ 
 def create_player(self):
     nick = self.get_user().nickname()
     alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
@@ -216,26 +216,29 @@ def delete_player(self):
             "Deleting blocks..."
             delete_block(self, block.blockID)
         alumn.delete()
-    
+
 def add_block_to_player(self, block_ID):
     nick = self.get_user().nickname()
-    block = GDefierBlock.gql("WHERE blockID = '" + block_ID +"'").get()
-    if block == None:
-        alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
-        if alumn:
-            print "Adding block to player..."
-            GDefierBlock(player=alumn, blockID=block_ID).put()
-    
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            #print "Block already added..."
+            return b
+    print "Adding block to player..."
+    block = GDefierBlock(player=alumn, blockID=block_ID).put()
+    return block
+
 def delete_block(self, block_ID):
-    block = GDefierBlock.gql("WHERE blockID = '" + block_ID +"'").get()
-    if block:
-        print "Deleting block with ID -->", block.blockID
-        block.delete()
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            print "Deleting block with ID -->", b.blockID
+            b.delete()
 
 def create_group(self):
     course = sites.get_course_for_current_request()
     group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
-    print group
     if not group:
         print "Creating group..." 
         aux_group = GDefierGroup(name=course.get_namespace_name()).put()
@@ -255,12 +258,42 @@ def player_exist(self):
     if not alumn:
         return True
     return False
-                
-"""def add_to_group(self, nick):
-    course = sites.get_course_for_current_request()
-    group = GDefierGroup.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+
+def player_has_blocks(self):
+    nick = self.get_user().nickname()
     alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
-    if group.key() not in alumn.group:
-        alumn.group.append(group.key())
-        alumn.put()"""
-        
+    if alumn.blocks.count() != 0:
+        return False
+    return True        
+
+def to_dict(self):
+    return dict([(p, unicode(getattr(self, p))) for p in self.properties()])
+
+def add_request_challenge(self, user, block_ID):
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            print "xxxxxxx"
+            b.sends.append(user)
+            b.put()
+            break
+    alumn = GDefierPlayer.gql("WHERE name = '" + user +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            print "yyyyyyyy"
+            b.request.append(nick)
+            b.put()
+            break
+
+def create_board(self, blocks):
+    course = sites.get_course_for_current_request()
+    board = GDefierBoard.gql("WHERE name = '" + course.get_namespace_name() + "'").get()
+    if not board:
+        print "Creating board..." 
+        aux_board = GDefierBoard(name=course.get_namespace_name()).put()
+        for b in blocks:
+            print "Creating block to board..." 
+            GDefierBoardBlock(blockID=b['block_title'], board=[aux_board]).put()        
+        return aux_board
+    return board
