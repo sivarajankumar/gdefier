@@ -109,46 +109,123 @@ class RegisterDefierHandler(BaseHandler):
         
 class BlocksHandler(BaseHandler):
     
-    def send_request(self, user, b_id):
-        
-        course_info = get_course_dict()
-        b_info =  course_info['module']['blocks'][b_id-1]
-        gDefier_model.add_request_challenge(self, user, b_info['block_title'])
-        
-        self.redirect('/gDefier/block/' + str(b_id))
+    def send_request(self, user, block_title):  
+        gDefier_model.add_request_challenge(self, user, block_title)  
+        self.redirect('/gDefier/block?title=' + block_title)
+
+    def accept_request(self, user, block_title):  
+        gDefier_model.del_request_challenge(self, user, block_title)
+        # Create a challenge
+        gDefier_model.create_defy(self, user, block_title)
+        self.redirect('/gDefier/block?title=' + block_title)
+
+    def reject_request(self, user, block_title):
+        gDefier_model.del_request_challenge(self, user, block_title)    
+        self.redirect('/gDefier/block?title=' + block_title)
     
     def get(self):
         if not self.personalize_page_and_get_enrolled():
             return
-        
-        b_id = int(sites.get_path_info().split("/")[-1])
-        
+         
+        block_title = self.request.get('title')
+
         course_info = get_course_dict()
-        b_info =  course_info['module']['blocks'][b_id-1]
-
-        
-        # Sending an invitation to create challenge
+        for b in course_info['module']['blocks']:
+            if b['block_title'] == block_title:
+                b_info = b
+ 
+        # Sending, accepting or rejecting an invitation to create challenge
         if self.request.get('request'):
-            self.send_request(self.request.get('request'), b_id)
+            self.send_request(self.request.get('request'), block_title)
+            
+        if self.request.get('accept'):
+            self.accept_request(self.request.get('accept'), block_title)
 
-        block = gDefier_model.add_block_to_player(self, b_info['block_title'])
+        if self.request.get('reject'):
+            self.reject_request(self.request.get('reject'), block_title)
+
+        block = gDefier_model.add_block_to_player(self, block_title)
         
+        invitations=[]
+        if block.request:
+            invitations = block.request
+
         b_stats = gDefier_model.to_dict(block)
         b_stats.pop('player')
+        b_stats.pop('blockID')
         b_info.pop('question_cast')
-        
+
         path = sites.abspath(self.app_context.get_home_folder(),
                      GCB_GDEFIER_FOLDER_NAME)
         page = 'templates/gDefier_blocks.html'
         
+        # Avoiding repeated opponents or defies
         players = gDefier_model.get_players(self)
-         
+        board_block = gDefier_model.GDefierBoardBlock.gql("WHERE blockID = '" + block_title + "'").get()
+        opponents = []
+        s1 = ""
+        s2 = ""
+        me = self.get_user().nickname()
+        for p in players:
+            existing_defy = False
+            if p.blocks.count() == 0:
+                #User unregistered in G-Defier module yet
+                continue
+            for s1 in block.sends:
+                if p.name == s1:
+                    break
+            for s2 in block.request:
+                if p.name == s2:
+                    break
+            if p.name == s1 or p.name == s2 or p.name == me:
+                    continue
+            for df in board_block.defies:
+                if df.rname == p.name and df.lname == me:
+                    existing_defy = True
+                    break
+                elif df.rname == me and df.lname == p.name:
+                    existing_defy = True
+                    break
+            if existing_defy:
+                continue
+            opponents.append(p.name)
+            
+        my_defies = gDefier_model.player_defies(self, block_title)
+
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['b_info'] = b_info
         self.template_value['b_stats'] = b_stats
-        self.template_value['players'] = players
+        self.template_value['players'] = opponents
+        self.template_value['invitations'] = invitations
         self.template_value['user'] = self.get_user().nickname()
+        self.template_value['my_defies'] = my_defies
+        self.render(template)
+
+class ArenaHandler(BaseHandler):
+    def get(self):
+        """Handles GET requests."""
+        if not self.personalize_page_and_get_enrolled():
+            return
+        
+        defy_key = self.request.get('defy')
+        defy = gDefier_model.GDefierDefy.get(defy_key)
+        
+        course_info = get_course_dict()   
+        
+        path = sites.abspath(self.app_context.get_home_folder(),
+                     GCB_GDEFIER_FOLDER_NAME)
+        page = 'templates/gDefier_arena.html'        
+        
+        khan_exercise = """<h1>My lesson</h1>
+<p>My Exercise:
+   <khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex>
+</p>
+"""
+        template = self.get_template(page, additional_dirs=[path])
+        self.template_value['navbar'] = {'gDefier': True}
+        self.template_value['defy'] = defy
+        self.template_value['khan_exercise'] = khan_exercise
         self.render(template)
 
 class StudentDefierHandler(BaseHandler):
@@ -381,9 +458,8 @@ def register_module():
     gDefier_routes = [
         ('/gDefier/home', StudentDefierHandler),
         ('/gDefier/register', RegisterDefierHandler),
-        ('/gDefier/block/1', BlocksHandler),
-        ('/gDefier/block/2', BlocksHandler),
-        ('/gDefier/block/3', BlocksHandler),
+        ('/gDefier/block', BlocksHandler),
+        ('/gDefier/arena', ArenaHandler)
         ]
 
     global custom_module

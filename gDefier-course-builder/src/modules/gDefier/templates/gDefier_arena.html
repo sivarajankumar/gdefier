@@ -1,0 +1,22 @@
+{% extends 'base_course.html' %}
+
+{% block subtitle %}
+{# I18N: Title of the G-Defier block webpage. #}
+Arena
+{% endblock subtitle %}
+
+
+{% block top_content %}
+  <a href="gDefier/block?title={{defy.block_board.blockID}}">
+  Go to block "{{defy.block_board.blockID}}"
+  </a>
+  <div class="gcb-cols">
+	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#F44F4F">
+	{{defy.rname}} VS {{defy.lname}} 
+	</h1>
+</div>
+{% endblock %}
+
+{% block main_content %}
+{{ khan_exercise | gcb_tags}}
+{% endblock %}

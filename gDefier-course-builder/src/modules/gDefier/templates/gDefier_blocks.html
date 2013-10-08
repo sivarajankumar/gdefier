@@ -6,51 +6,80 @@ Block "{{ b_info.block_title }}"
 {% endblock subtitle %}
 
 {% block top_content %}
+<div class="gcb-cols">
+	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#F44F4F">
+		G-Defier Block "{{ b_info.block_title }}"
+	</h1>
+</div>
 {% endblock %}
 
 {% block main_content %}
-
 <div class="parent">
-  <div class="left">
-       <h1 class="gcb-unit-header">
-          Block "{{ b_info.block_title }}" Stats
-        </h1>
+  <div class="left" align="center">
+        <h1> Stats </h1>
 	    {% for key in b_stats recursive %}
-	        <li>{{ key }} : {{ b_stats[key] }}</li>	
+	    	{% if key == 'request'%}
+   		        <li>{{ key }} : 
+   		        {% for inv in invitations recursive %}
+   		        	<a onclick="acceptRequest()" id="inv">{{inv}}</a> 
+   		        {% endfor %}
+   		        </li>	
+ 		    {% else %}
+    	        <li>{{ key }} : {{ b_stats[key] }}</li>	
+			{% endif %}
+
 	    {% endfor %}
   </div>
-  <div clas="right">
-        <h1 class="gcb-unit-header">
-          Block "{{ b_info.block_title }}" Info
-        </h1>
+  <div class="right" align="center">
+        <h1> Block Info </h1>
 	    {% for key in b_info recursive %}
 	        <li>{{ key }} : {{ b_info[key] }}</li>	
 	    {% endfor %}
   </div>
+  <div class="center" align="center">
+    <br>
+	Please choose an opponent to send an invitation:
+	<form id="form1" method='get'>
+		<select size="{{players.__len__()}}" id="challenge2">
+			{% for p in players %}
+			<option>{{p}}</option>
+			{% endfor %}
+		</select>
+	</form>
+	<button class="gcb-button" type="button" onclick="displayResult()">
+	Send Invitation
+	</button>
+	<br><br>
+	<h2>My ongoing defies</h2>
+    {% for def in my_defies recursive %}
+       	{% if user == def.rname%}    	
+	   	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.lname}}</a></li>	
+		{% else %} 
+     	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.rname}}</a></li>	
+		{% endif %}        
+    {% endfor %}
+  </div>
 </div>
 
-</br>
-
 <script>
-function displayResult()
-{
+function displayResult(){
 	var x=document.getElementById("challenge2").selectedIndex;
 	var y=document.getElementById("challenge2").options;
-	window.location = window.location + '?request=' + y[x].text;
+	window.location = window.location + '&request=' + y[x].text;
+}
+
+function acceptRequest()
+{
+var inv = document.getElementById('inv').text;
+var conf = "\" has sent you an invitation to a challenge. Do you accept it?"
+var r = confirm("\"" + inv + conf);
+if (r==true) {
+	window.location = window.location + '&accept=' + inv;
+} else {
+	window.location = window.location + '&reject=' + inv;
+  }
 }
 </script>
-
-Please choose an opponent to send an invitation:
-<form id="form1" method='get'>
-	<select size="{{players.count()-1}}" id="challenge2">
-		{% for p in players %}
-		{% if p.name != user %}
-			<option>{{p.name}}</option>
-		{% endif %}
-		{% endfor %}
-	</select>
-</form>
-<button type="button" onclick="displayResult()">Send Invitation</button>
 
 <style type="text/css">
 .parent{
@@ -61,14 +90,21 @@ Please choose an opponent to send an invitation:
 }
 .left{
     float:left;
-    width:50%;
+    width:33%;
     height: 100%;
     overflow:hidden;
     }
 .right{
-    width:50%;
+	float:right;
+    width:33%;
     height: 100%;    
     overflow:hidden;
 }   
+.center{
+	float:center;
+    width:34%;
+    height: 100%;    
+    overflow:hidden;
+} 
 </style>
 {% endblock %}

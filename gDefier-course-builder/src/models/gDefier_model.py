@@ -27,7 +27,7 @@ DEFAULT_COURSE_GDEFIER_DICT = {
        'w_rally' : 2,
        'editor_block' : True,
        'n_editor' : 5,
-       'w_editor' : 2     
+       'w_editor' : 2 
       }                  
 }
 
@@ -65,8 +65,6 @@ def create_gdefier_module_registry():
     n_blocks_options.append((2, 2))
     n_blocks_options.append((3, 3))
     
-    module_opts.add_property(SchemaField(
-        'module:n_blocks', 'Number of blocks', 'integer', select_data=n_blocks_options))
     module_opts.add_property(SchemaField(
         'module:n_defies', 'Defies', 'integer',
         description='Number of defies to pass the blocks'))
@@ -180,12 +178,12 @@ class GDefierBoardBlock(db.Model):
     board = db.ListProperty(db.Key)
 
 class GDefierDefy(db.Model):
-    board = db.ReferenceProperty(GDefierBoardBlock,
+    block_board = db.ReferenceProperty(GDefierBoardBlock,
                            collection_name='defies')
     rname = db.StringProperty(indexed=True, required=True)
     lname = db.StringProperty(indexed=True, required=True)
     turn = db.StringProperty(indexed=True, required=True,
-                             choices=set(["r","l"]))
+                             choices=set(["r","l"]), default="r")
     rscore = db.IntegerProperty(indexed=False, default=0)
     lscore = db.IntegerProperty(indexed=False, default=0)
     rtime = db.TimeProperty(indexed=False)
@@ -224,7 +222,7 @@ def add_block_to_player(self, block_ID):
         if b.blockID == block_ID:
             #print "Block already added..."
             return b
-    print "Adding block to player..."
+    print "Adding block to player...-->" ,block_ID
     block = GDefierBlock(player=alumn, blockID=block_ID).put()
     return block
 
@@ -274,17 +272,34 @@ def add_request_challenge(self, user, block_ID):
     alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
     for b in alumn.blocks:
         if b.blockID == block_ID:
-            print "xxxxxxx"
             b.sends.append(user)
             b.put()
             break
     alumn = GDefierPlayer.gql("WHERE name = '" + user +"'").get()
     for b in alumn.blocks:
         if b.blockID == block_ID:
-            print "yyyyyyyy"
             b.request.append(nick)
             b.put()
             break
+        
+def del_request_challenge(self, defier, block_ID):
+    nick = self.get_user().nickname()
+    alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            for s in b.request:
+                if s == defier:
+                    del b.request[b.request.index(s)]
+                    b.put()
+                    break
+    alumn = GDefierPlayer.gql("WHERE name = '" + defier +"'").get()
+    for b in alumn.blocks:
+        if b.blockID == block_ID:
+            for s in b.sends:
+                if s == nick:
+                    del b.sends[b.sends.index(s)]
+                    b.put()
+                    break
 
 def create_board(self, blocks):
     course = sites.get_course_for_current_request()
@@ -297,3 +312,17 @@ def create_board(self, blocks):
             GDefierBoardBlock(blockID=b['block_title'], board=[aux_board]).put()        
         return aux_board
     return board
+
+def create_defy(self, user, blockID):
+    block = GDefierBoardBlock.gql("WHERE blockID = '" + blockID + "'").get()
+    print "Creating Defy..."
+    GDefierDefy(block_board=block, rname=user, lname=self.get_user().nickname()).put()
+    
+def player_defies(self, blockID):
+    nick = self.get_user().nickname()   
+    board_block = GDefierBoardBlock.gql("WHERE blockID = '" + blockID + "'").get()
+    defies = []
+    for df in board_block.defies:
+        if df.rname == nick or df.lname == nick:
+            defies.append(df)
+    return defies
