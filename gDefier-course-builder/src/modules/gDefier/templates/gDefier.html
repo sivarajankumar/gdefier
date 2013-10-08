@@ -13,15 +13,13 @@
 
 {% block main_content %}
   {% if not gDefier_transient_student %}
-	{% for number in range(entity.module.n_blocks) %}
+	{% for number in range(entity.module.blocks.__len__()) %}
 	  <div class="gcb-col-10">
 	    <center>
-	       <form action='gDefier/block/{{number+1}}' method='get'>
-	         <button class="gcb-button gcb-button-large" type="submit">
+	       <a class="gcb-button gcb-button-large" href='gDefier/block?title={{entity.module.blocks[number].block_title}}'>
 	           {# I18N: G-Defier start block button on the main page of the module. #}
-	           Block {{number + 1}}
-	         </button>
-	       </form>
+	           Block "{{entity.module.blocks[number].block_title}}"
+	       </a>
 	    </center>
 	  </div>
 	  <br>
@@ -45,5 +43,4 @@
 		  </div>
       </div>
     </div>
-
 {% endblock %}
