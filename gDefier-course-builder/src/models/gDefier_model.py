@@ -174,12 +174,12 @@ class GDefierBoardBlock(db.Model):
 class GDefierDefy(db.Model):
     block_board = db.ReferenceProperty(GDefierBoardBlock,
                            collection_name='defies')
+    rended = db.BooleanProperty(indexed=False, default=False)
+    lended = db.BooleanProperty(indexed=False, default=False)
     rname = db.StringProperty(indexed=True, required=True)
     lname = db.StringProperty(indexed=True, required=True)
-    turn = db.StringProperty(indexed=True, required=True,
-                             choices=set(["r","l"]), default="r")
-    rscore = db.IntegerProperty(indexed=False, default=0)
-    lscore = db.IntegerProperty(indexed=False, default=0)
+    rscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
+    lscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
     rtime = db.TimeProperty(indexed=False)
     ltime = db.TimeProperty(indexed=False)
  

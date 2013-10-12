@@ -208,10 +208,19 @@ class BlocksHandler(BaseHandler):
 class ArenaHandler(BaseHandler):
     
     def academy_answer(self, khandata):
-        x= models.EventEntity.get(khandata)
+        data = models.EventEntity.get(khandata)
         
-        if self.get_user().user_id() == x.user_id:
-            print x.data
+        if self.get_user().user_id() == data.user_id:
+            print data.data
+            
+    def end_defy(self, defy_key):
+        defy = db.get(defy_key)
+        nick = self.get_user().nickname()
+        if defy.rname == nick:
+            defy.rended = True
+        else:
+            defy.lended = True
+        defy.put()
     
     def get(self):
         """Handles GET requests."""
@@ -222,8 +231,13 @@ class ArenaHandler(BaseHandler):
         if self.request.get('khandata'):
             self.academy_answer(self.request.get('khandata'))
             return
-
+        
         defy_key = self.request.get('defy')
+        
+        # Cathing END exercise
+        if self.request.get('end'):
+            self.end_defy(defy_key)
+
         defy = gDefier_model.GDefierDefy.get(defy_key)
         
         course_info = get_course_dict()   
@@ -242,12 +256,21 @@ class ArenaHandler(BaseHandler):
         question = re.findall('[^>]+>', question)
         questions = [i+j for i,j in zip(question[::2],question[1::2])]
         
+        t_round = course_info['module']['defy']['round_time']
+
+        nick = self.get_user().nickname()
+        if defy.rname == nick:
+            side = 'right'
+        else:
+            side = 'left'
+
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['defy'] = defy
         self.template_value['questions'] = questions
         self.template_value['rounds'] = rounds
-        self.template_value['resources_path'] = RESOURCES_PATH
+        self.template_value['t_round'] = t_round
+        self.template_value['side'] = side
         self.render(template)
 
 class StudentDefierHandler(BaseHandler):

@@ -209,12 +209,12 @@ class KhanExerciseTag(tags.BaseTag):
         caption = name.replace('_', ' ')
         return cElementTree.XML(
             """
-<div style='width: 750px;height: 500px;'>
+<div style='width: 800px; height: 450px;'>
   Khan Academy Exercise: %s
   <br/>
   <script>
     // customize the style of the exercise iframe
-    var ity_ef_style = "width: 750px; height: 500px;";
+    var ity_ef_style = "width: 750px; height: 450px;";
   </script>
   <script src="%s" type="text/javascript"></script>
 </div>""" % (
@@ -324,8 +324,6 @@ class KhanExerciseRenderer(utils.BaseHandler):
         """Handle POST, i.e. 'Check Answer' button is pressed."""
         data = self.request.get('ity_ef_audit')
         result, event = self._record_student_submission(data)
-        print result
-        print event.key()
         if result:
             ATTEMPT_COUNT.inc()
             self.response.write('{}')  # we must return valid JSON on success

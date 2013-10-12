@@ -26,21 +26,44 @@
 	{% endfor %}
   {% endif %}
 
- <div style="margin-top: 20px;" class="gcb-cols">
-      <div class="gcb-col-1">
-      </div>
-      <div class="gcb-col-9">
+<!--  <div style="margin-top: 20px;" class="gcb-cols"> -->
+<!--       <div class="gcb-col-1"> -->
+<!--       </div> -->
+<!--       <div class="gcb-col-9"> -->
 
-        <h1 class="gcb-unit-header">
-          {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
-          {{ gettext('G-Defier Module Settings') }}
-        </h1>
-        <div id="gcb-main">
-          <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">	
-		    {% for key in entity.module recursive %}
-		        <li>{{ key }} : {{ entity.module[key] }}</li>	
-		    {% endfor %}
-		  </div>
-      </div>
-    </div>
+<!--         <h1 class="gcb-unit-header"> -->
+<!--           {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #} -->
+<!--           {{ gettext('G-Defier Module Settings') }} -->
+<!--         </h1> -->
+<!--         <div id="gcb-main"> -->
+<!--           <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">	 -->
+<!-- 		    {% for key in entity.module recursive %} -->
+<!-- 		        <li>{{ key }} : {{ entity.module[key] }}</li>	 -->
+<!-- 		    {% endfor %} -->
+<!-- 		  </div> -->
+<!--       </div> -->
+<!--     </div> -->
+
+<style type="text/css">
+{% include 'resources/css/buttons.css' %}
+</style>
+
+<div id='wrapper'>
+  		<div class='cool_btn1 green'>
+				<h1 class='top'>126 <i>Wins</i></h1>
+				<h2>H</h2>
+			</div>
+			<div class='cool_btn1 teal'>
+				<h1 class='top'>10k <i>Likes</i></h1>
+				<h2>U</h2>
+			</div>
+			<div class='cool_btn1 blue'>
+				<h1 class='top'>240 <i>Likes</i></h1>
+				<h2>G</h2>
+			</div>
+			<div class='cool_btn1 orange'>
+				<h1 class='top'>21k <i>Points</i></h1>
+				<h2>)</h2>
+			</div>
+</div>	
 {% endblock %}

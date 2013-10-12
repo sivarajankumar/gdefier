@@ -29,14 +29,13 @@ Block "{{ b_info.block_title }}"
 			{% endif %}
 
 	    {% endfor %}
-  </div>
-  <div class="right" align="center">
+	    <br>
         <h1> Block Info </h1>
 	    {% for key in b_info recursive %}
 	        <li>{{ key }} : {{ b_info[key] }}</li>	
 	    {% endfor %}
   </div>
-  <div class="center" align="center">
+  <div class="right" align="center">
     <br>
 	Please choose an opponent to send an invitation:
 	<form id="form1" method='get'>
@@ -49,14 +48,27 @@ Block "{{ b_info.block_title }}"
 	<button class="gcb-button" type="button" onclick="displayResult()">
 	Send Invitation
 	</button>
-	<br><br>
-	<h2>My ongoing defies</h2>
+  </div>
+  <div class="center" align="center">
+	<h1>My ongoing defies</h1>
     {% for def in my_defies recursive %}
-       	{% if user == def.rname%}    	
-	   	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.lname}}</a></li>	
-		{% else %} 
-     	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.rname}}</a></li>	
-		{% endif %}        
+    	{% if not def.rended or not def.lended%} 
+	       	{% if user == def.rname%}    	
+		   	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.lname}}</a></li>	
+			{% else %} 
+	     	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.rname}}</a></li>	
+			{% endif %}
+	 	{% endif %}       
+    {% endfor %}
+   	<h1>My ended defies</h1>
+    {% for def in my_defies recursive %}
+   		{% if def.rended and def.lended %}
+	       	{% if user == def.rname%}    	
+		   	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.lname}}</a></li>	
+			{% else %} 
+	     	<li><a href="gDefier/arena?defy={{def.key()}}">{{def.rname}}</a></li>	
+			{% endif %}
+	  	{% endif %}      
     {% endfor %}
   </div>
 </div>
@@ -96,13 +108,13 @@ if (r==true) {
     }
 .right{
 	float:right;
-    width:33%;
+    width:34%;
     height: 100%;    
     overflow:hidden;
 }   
 .center{
 	float:center;
-    width:34%;
+    width:33%;
     height: 100%;    
     overflow:hidden;
 } 
