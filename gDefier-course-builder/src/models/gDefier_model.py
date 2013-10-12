@@ -12,22 +12,16 @@ from common.schema_fields import SchemaField
 
 from controllers import sites
 
-from modules.khanex import khanex
-
 from google.appengine.ext import db
 
 # Here are the defaults for a G-Defier module of a new course.
 DEFAULT_COURSE_GDEFIER_DICT = {
     'module': {
        'w_module' : 6,
-       'n_blocks' : 1,
-       'n_challenges' : 3,
-       'rally_block' : True,
-       'n_rally' : 10,
-       'w_rally' : 2,
-       'editor_block' : True,
-       'n_editor' : 5,
-       'w_editor' : 2 
+       'blocks':[{'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex><khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex>', 'gdf_start_date': '2', 'block_title': 'Primero'}, {'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex><khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex>', 'gdf_start_date': '2', 'block_title': 'Segundo'}],
+       'max_defies':8,
+       'n_defies':3,
+       'defy' : {'time2accept': '24', 'n_round': '2', 'round_time': '2'}    
       }                  
 }
 
@@ -38,7 +32,7 @@ in the UTC timezone."""
 def create_gdefier_module_registry():
     """Create the registry for course properties."""
     
-    """Make schema with a list of all exercises by inspecting a zip file."""
+    """Make schema with a list of all exercises by inspecting a zip file.
     zip_file = zipfile.ZipFile(khanex.ZIP_FILE)
     exercise_list = []
     for name in zip_file.namelist():
@@ -51,7 +45,7 @@ def create_gdefier_module_registry():
         if khanex._allowed(name):
             caption = name.replace('_', ' ')
             khanex_exercises.append((name, '#%s: %s' % (index, caption)))
-            index += 1
+            index += 1"""
 
     reg = FieldRegistry('G-Defier Module Settings', description='G-Defier Settings')
 
