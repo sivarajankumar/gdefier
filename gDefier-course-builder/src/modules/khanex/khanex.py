@@ -209,12 +209,12 @@ class KhanExerciseTag(tags.BaseTag):
         caption = name.replace('_', ' ')
         return cElementTree.XML(
             """
-<div style='width: 450px;'>
+<div style='width: 750px;height: 500px;'>
   Khan Academy Exercise: %s
   <br/>
   <script>
     // customize the style of the exercise iframe
-    var ity_ef_style = "width: 750px;";
+    var ity_ef_style = "width: 750px; height: 500px;";
   </script>
   <script src="%s" type="text/javascript"></script>
 </div>""" % (
@@ -270,7 +270,7 @@ class KhanExerciseRenderer(utils.BaseHandler):
             return False
 
         # record submission
-        models.EventEntity.record(
+        event = models.EventEntity.record(
             'module-khanex.exercise-submit', self.get_user(), data)
 
         # update progress
@@ -278,7 +278,7 @@ class KhanExerciseRenderer(utils.BaseHandler):
         self.get_course().get_progress_tracker().put_activity_accessed(
             student, unit_id, lesson_id)
 
-        return True
+        return True,event
 
     def _get_unit_lesson_from(self, data):
         """Extract unit and lesson id from exercise data submission."""
@@ -323,9 +323,13 @@ class KhanExerciseRenderer(utils.BaseHandler):
     def post(self):
         """Handle POST, i.e. 'Check Answer' button is pressed."""
         data = self.request.get('ity_ef_audit')
-        if self._record_student_submission(data):
+        result, event = self._record_student_submission(data)
+        print result
+        print event.key()
+        if result:
             ATTEMPT_COUNT.inc()
             self.response.write('{}')  # we must return valid JSON on success
+            self.redirect('/gDefier/arena?khandata='+str(event.key()))
             return
 
         self.error(404)

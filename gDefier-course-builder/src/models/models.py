@@ -585,6 +585,7 @@ class EventEntity(BaseEntity):
         event.user_id = user.user_id()
         event.data = data
         event.put()
+        return event
 
     def for_export(self, transform_fn):
         model = super(EventEntity, self).for_export(transform_fn)

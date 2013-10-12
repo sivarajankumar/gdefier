@@ -11,6 +11,7 @@ import json
 import yaml
 import logging
 import datetime
+import re
 from google.appengine.ext import db
 
 from controllers import utils
@@ -20,6 +21,7 @@ from controllers.utils import BaseRESTHandler
 from controllers.utils import XsrfTokenManager
 from controllers.sites import ApplicationContext
 
+from models import models
 from models import content
 from models import custom_modules
 from models import vfs
@@ -41,6 +43,7 @@ from google.appengine.api import users
 
 GCB_GDEFIER_FOLDER_NAME = os.path.normpath('/modules/gDefier/')
 DFR_CONFIG_FILENAME = os.path.normpath('/gDefier.yaml')
+RESOURCES_PATH = '/modules/gDefier/resources'
 
 custom_module = None
 
@@ -203,11 +206,23 @@ class BlocksHandler(BaseHandler):
         self.render(template)
 
 class ArenaHandler(BaseHandler):
+    
+    def academy_answer(self, khandata):
+        x= models.EventEntity.get(khandata)
+        
+        if self.get_user().user_id() == x.user_id:
+            print x.data
+    
     def get(self):
         """Handles GET requests."""
         if not self.personalize_page_and_get_enrolled():
             return
-        
+
+        # Cathing Khan answer
+        if self.request.get('khandata'):
+            self.academy_answer(self.request.get('khandata'))
+            return
+
         defy_key = self.request.get('defy')
         defy = gDefier_model.GDefierDefy.get(defy_key)
         
@@ -217,15 +232,22 @@ class ArenaHandler(BaseHandler):
                      GCB_GDEFIER_FOLDER_NAME)
         page = 'templates/gDefier_arena.html'        
         
-        khan_exercise = """<h1>My lesson</h1>
-<p>My Exercise:
-   <khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex>
-</p>
-"""
+        """ Getting rounds per defy and possible questions of this bloc"""
+        rounds = course_info['module']['defy']['n_round']
+        for b in course_info['module']['blocks']:
+            if defy.block_board.blockID == b['block_title']:
+                question = b['question_cast']
+                break
+        
+        question = re.findall('[^>]+>', question)
+        questions = [i+j for i,j in zip(question[::2],question[1::2])]
+        
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['defy'] = defy
-        self.template_value['khan_exercise'] = khan_exercise
+        self.template_value['questions'] = questions
+        self.template_value['rounds'] = rounds
+        self.template_value['resources_path'] = RESOURCES_PATH
         self.render(template)
 
 class StudentDefierHandler(BaseHandler):

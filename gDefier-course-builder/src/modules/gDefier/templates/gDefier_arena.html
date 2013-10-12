@@ -5,7 +5,6 @@
 Arena
 {% endblock subtitle %}
 
-
 {% block top_content %}
   <a href="gDefier/block?title={{defy.block_board.blockID}}">
   Go to block "{{defy.block_board.blockID}}"
@@ -18,5 +17,46 @@ Arena
 {% endblock %}
 
 {% block main_content %}
-{{ khan_exercise | gcb_tags}}
+<link rel="stylesheet" type="text/css" href="assets/css/butterbar.css" media="screen" />
+<button id="first">First</button>
+<button id="second">Second</button>
+<div id="khan1">
+{{ questions[0] | gcb_tags}}
+</div>
+<div id="khan2">
+{{ questions[1] | gcb_tags}}
+</div>
+
+<style>
+#khan1 {
+display: none;
+float: center;
+}
+#khan2 {
+display: none;
+float: center;
+}
+#second {
+display: none;
+}
+</style>
+
+<script>
+$( "#first" ).click(function() {
+	$( "#khan1" ).show( "fast");
+	$( "#first" ).hide();
+    setTimeout(function() {
+    	$( "#khan1" ).hide();
+    	$( "#second" ).show( "fast");
+    }, 10000);
+});
+$( "#second" ).click(function() {
+	$( "#khan2" ).show( "fast");
+    setTimeout(function() {
+    	$( "#khan2" ).hide();
+    	$( "#second" ).hide();
+    }, 10000);
+});
+</script>
+
 {% endblock %}
