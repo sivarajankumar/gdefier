@@ -11,23 +11,52 @@ Arena
   </a>
   <div class="gcb-cols">
 	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#F44F4F">
-	{{defy.rname}} VS {{defy.lname}} 
+	{{defy.lname}} VS {{defy.rname}}
 	</h1>
 </div>
 {% endblock %}
 
 {% block main_content %}
-<link rel="stylesheet" type="text/css" href="assets/css/butterbar.css" media="screen" />
-<button id="first">First</button>
-<button id="second">Second</button>
-<div id="khan1">
-{{ questions[0] | gcb_tags}}
-</div>
-<div id="khan2">
-{{ questions[1] | gcb_tags}}
-</div>
 
-<style>
+{% if side == 'left' %}
+	{% set side_ended = defy.lended %}
+{% else %}
+	{% set side_ended = defy.rended %}
+{% endif %}
+
+{% if not side_ended%}
+	<div align=center class= "container">
+		<div class="countdown retro" id="countdown"></div>
+	</div>
+	{% for number in range(questions.__len__()) %}
+		{% if number==0 %}
+			<button id="first">First round</button>
+		{% elif number==questions.__len__()-1 %}
+			<button id="last">Last round</button>
+		{% else %}
+			<button id="next">Next round</button>
+		{% endif %}
+	 	<div align=center id="khan{{number+1}}">
+			{{ questions[number] | gcb_tags}}
+		</div>
+	{% endfor %}
+{% else %}
+<div align=center class= "container">
+	<div class="lname" align="left">
+		{{defy.lscore}}
+		{{defy.lended}}
+	</div>
+	<div class="rname" align="right">
+		{{defy.rscore}}
+		{{defy.rended}}
+	</div>
+</div>	
+{% endif %}
+
+<style type="text/css">
+{% include 'resources/css/buttons.css' %}
+{% include 'resources/countdown/style.css' %}
+
 #khan1 {
 display: none;
 float: center;
@@ -36,27 +65,56 @@ float: center;
 display: none;
 float: center;
 }
-#second {
+#last,#next {
+display: none;
+}
+#countdown {
 display: none;
 }
 </style>
 
-<script>
+<script type='text/javascript'>
+
+{% include 'resources/countdown/jquery.countdown.js' %}
+
+var t_round = "{{ t_round }}";
+//var counter = 60000 * t_round;
+var counter = 30000;
+
 $( "#first" ).click(function() {
+	$( "#countdown" ).show( "fast");
 	$( "#khan1" ).show( "fast");
 	$( "#first" ).hide();
+	countdown(counter);
     setTimeout(function() {
     	$( "#khan1" ).hide();
-    	$( "#second" ).show( "fast");
-    }, 10000);
+    	$( "#last" ).show( "fast");
+    }, counter);
 });
-$( "#second" ).click(function() {
+$( "#last" ).click(function() {
 	$( "#khan2" ).show( "fast");
+	$( "#last" ).hide();
+	update_countdown(counter)
     setTimeout(function() {
     	$( "#khan2" ).hide();
-    	$( "#second" ).hide();
-    }, 10000);
+    	window.location = window.location + '&end=END';
+    }, counter);
 });
+
+function countdown(counter) {
+	  $('.countdown.retro').countdown({
+	    date: +(new Date) + counter,
+	    render: function(data) {
+	        $(this.el).text(this.leadingZeros(data.min, 2) + " min and " + this.leadingZeros(data.sec, 2) + " sec");
+	    },
+	    onEnd: function() {
+	      $(this.el).addClass('ended');
+	    }
+	});
+}	  
+function update_countdown(counter) {
+       $('.countdown.retro').removeClass('ended').data('countdown').update(+(new Date) + counter).start();
+}
 </script>
 
 {% endblock %}
