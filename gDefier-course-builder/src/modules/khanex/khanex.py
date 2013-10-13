@@ -89,6 +89,7 @@ import urllib2
 import urlparse
 from xml.etree import cElementTree
 import zipfile
+import json
 
 from common import schema_fields
 from common import tags
@@ -327,7 +328,9 @@ class KhanExerciseRenderer(utils.BaseHandler):
         if result:
             ATTEMPT_COUNT.inc()
             self.response.write('{}')  # we must return valid JSON on success
-            self.redirect('/gDefier/arena?khandata='+str(event.key()))
+            data = json.loads(data)
+            if data['pass']:
+                self.redirect('/gDefier/arena?khandata='+str(event.key()))
             return
 
         self.error(404)

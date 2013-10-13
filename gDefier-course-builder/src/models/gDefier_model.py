@@ -18,7 +18,7 @@ from google.appengine.ext import db
 DEFAULT_COURSE_GDEFIER_DICT = {
     'module': {
        'w_module' : 6,
-       'blocks':[{'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex><khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex>', 'gdf_start_date': '2', 'block_title': 'Primero'}, {'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex><khanex instanceid="WtXXRSKp6Twv" name="absolute_value_of_complex_numbers"></khanex>', 'gdf_start_date': '2', 'block_title': 'Segundo'}],
+       'blocks':[{'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="KKkSLIxa1U2g" name="adding_decimals"></khanex><khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex>', 'gdf_start_date': '2', 'block_title': 'Primero'}, {'gdf_close_date': '2', 'w_block': 3, 'question_cast': '<khanex instanceid="KKkSLIxa1U2g" name="adding_decimals"></khanex><khanex instanceid="vYmNEoc8xxSM" name="absolute_value"></khanex>', 'gdf_start_date': '2', 'block_title': 'Segundo'}],
        'max_defies':8,
        'n_defies':3,
        'defy' : {'time2accept': '24', 'n_round': '2', 'round_time': '2'}    
@@ -136,8 +136,8 @@ class GDefierGroup(db.Model):
 
 class GDefierPlayer(db.Model):
     name = db.StringProperty(indexed=True, required=True)
-    total_score = db.IntegerProperty(indexed=True, required=True, default=0)
-    
+    total_score = db.ListProperty(item_type=int, required=True, default=[0,0,0,0])
+    win_lost = db.ListProperty(item_type=int, required=True, default=[0,0])
     """r_on = db.BooleanProperty(indexed=False, default=False)
     r_count = db.IntegerProperty(indexed=False, default=0)
     r_done = db.BooleanProperty(indexed=False, default=False)
@@ -155,6 +155,7 @@ class GDefierBlock(db.Model):
     blockID = db.StringProperty(indexed=True, required=True)
     activated = db.BooleanProperty(indexed=False, default=False)
     done = db.BooleanProperty(indexed=False, default=False)
+    score = db.ListProperty(item_type=int,default=[0,0,0,0])
     wins = db.IntegerProperty(indexed=False, default=0)
     lost = db.IntegerProperty(indexed=False, default=0)
     request = db.ListProperty(str)
@@ -180,9 +181,16 @@ class GDefierDefy(db.Model):
     lname = db.StringProperty(indexed=True, required=True)
     rscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
     lscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
+    rrounds = db.ListProperty(item_type=int, required=True)
+    lrounds = db.ListProperty(item_type=int, required=True)
     rtime = db.TimeProperty(indexed=False)
     ltime = db.TimeProperty(indexed=False)
- 
+
+def get_player(self):
+    nick = self.get_user().nickname()
+    player = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
+    return player
+     
 def create_player(self):
     nick = self.get_user().nickname()
     alumn = GDefierPlayer.gql("WHERE name = '" + nick +"'").get()
@@ -307,10 +315,14 @@ def create_board(self, blocks):
         return aux_board
     return board
 
-def create_defy(self, user, blockID):
+def create_defy(self, user, blockID, size):
     block = GDefierBoardBlock.gql("WHERE blockID = '" + blockID + "'").get()
     print "Creating Defy..."
-    GDefierDefy(block_board=block, rname=user, lname=self.get_user().nickname()).put()
+    rounds = []
+    for x in range(size):
+        rounds.append(0)
+    print rounds
+    GDefierDefy(block_board=block, rname=user, lname=self.get_user().nickname(), rrounds = rounds, lrounds = rounds).put()
     
 def player_defies(self, blockID):
     nick = self.get_user().nickname()   
@@ -320,3 +332,80 @@ def player_defies(self, blockID):
         if df.rname == nick or df.lname == nick:
             defies.append(df)
     return defies
+
+def defy_solver(self, defy, n_defies):
+    block = defy.block_board
+    winner=None
+    # Getting winner
+    if defy.rscore[0]>defy.lscore[0]:
+        winner="r"
+    elif defy.rscore[0]<defy.lscore[0]:
+        winner="l"
+    else: # TIED Score see Attempts
+        if defy.rscore[1]>defy.lscore[1]:
+            winner="r"
+        elif defy.rscore[1]<defy.lscore[1]:
+            winner="l"
+        else: # TIED Attempts
+            if defy.rscore[3]>defy.lscore[3]:
+                winner="r"
+            elif defy.rscore[3]<defy.lscore[3]:
+                winner="l"
+            else:
+                """ TODO hyper TIED"""
+                pass 
+
+    ralumn = GDefierPlayer.gql("WHERE name = '" + defy.rname +"'").get()   
+    for b in ralumn.blocks:
+        if b.blockID == block.blockID:
+            for s in range(len(defy.rscore)): 
+                ralumn.total_score[s] += defy.rscore[s]
+                b.score[s] += defy.rscore[s]
+            if winner=="r":
+                b.wins += 1
+                ralumn.win_lost[0] += 1
+                if b.wins >= n_defies:
+                    b.done = True
+            else:
+                b.lost += 1
+                ralumn.win_lost[1] += 1
+            b.put()
+            break
+    ralumn.put()
+    
+    lalumn = GDefierPlayer.gql("WHERE name = '" + defy.lname +"'").get()
+    for b in lalumn.blocks:
+        if b.blockID == block.blockID:
+            for s in range(len(defy.lscore)): 
+                lalumn.total_score[s] += defy.lscore[s]
+                b.score[s] += defy.lscore[s]
+            if winner=="l":
+                b.wins += 1
+                lalumn.win_lost[0] += 1
+                if b.wins >= n_defies:
+                    b.done = True
+            else:
+                b.lost += 1
+                lalumn.win_lost[1] += 1
+            b.put()
+            break
+    lalumn.put()
+    
+def answer_solver(self, defy, js_data):
+        # Algorithm to point an answer. It can be less than zero.
+    score = 50 - js_data['count_hints'] * 15 - (js_data['attempt_number']-1)* 15
+    if score<0:
+        score = 0
+    # [Score,Attempts,fails,Hints] 
+    nick = self.get_user().nickname()
+    if defy.rname == nick:
+        defy.rscore[0] += score
+        defy.rscore[1] += js_data['attempt_number']
+        defy.rscore[2] += js_data['attempt_number']-1
+        defy.rscore[3] += js_data['count_hints']
+    else:
+        defy.lscore[0] += score
+        defy.lscore[1] += js_data['attempt_number']
+        defy.lscore[2] += js_data['attempt_number']-1
+        defy.lscore[3] += js_data['count_hints']
+    defy.put()

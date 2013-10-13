@@ -49,21 +49,29 @@
 </style>
 
 <div id='wrapper'>
-  		<div class='cool_btn1 green'>
-				<h1 class='top'>126 <i>Wins</i></h1>
-				<h2>H</h2>
-			</div>
-			<div class='cool_btn1 teal'>
-				<h1 class='top'>10k <i>Likes</i></h1>
-				<h2>U</h2>
-			</div>
-			<div class='cool_btn1 blue'>
-				<h1 class='top'>240 <i>Likes</i></h1>
-				<h2>G</h2>
-			</div>
-			<div class='cool_btn1 orange'>
-				<h1 class='top'>21k <i>Points</i></h1>
-				<h2>)</h2>
-			</div>
+	<div class='cool_btn1 green'>
+		<h1 class='top'>{{player.win_lost[0]}} <i>Wins</i></h1>
+		<h2>l</h2>
+	</div>
+	<div class='cool_btn1 red'>
+		<h1 class='top'>{{player.win_lost[1]}} <i>Lost</i></h1>
+		<h2>L</h2>
+	</div>
+	<div class='cool_btn1 orange'>
+		<h1 class='top'>{{player.total_score[0]}}<i>Score</i></h1>
+		<h2>)</h2>
+	</div>
+	<div class='cool_btn1 teal'>
+		<h1 class='top'>{{player.total_score[1]}} <i>Attempts</i></h1>
+		<h2>Z</h2>
+	</div>
+	<div class='cool_btn1 magent'>
+		<h1 class='top'>{{player.total_score[2]}} <i>Fails</i></h1>
+		<h2>x</h2>
+	</div>
+	<div class='cool_btn1 yellow'>
+		<h1 class='top'>{{player.total_score[3]}} <i>Hints</i></h1>
+		<h2>?</h2>
+	</div>
 </div>	
 {% endblock %}

@@ -12,6 +12,7 @@ import yaml
 import logging
 import datetime
 import re
+import ast
 from google.appengine.ext import db
 
 from controllers import utils
@@ -116,10 +117,10 @@ class BlocksHandler(BaseHandler):
         gDefier_model.add_request_challenge(self, user, block_title)  
         self.redirect('/gDefier/block?title=' + block_title)
 
-    def accept_request(self, user, block_title):  
+    def accept_request(self, user, block_title, size):  
         gDefier_model.del_request_challenge(self, user, block_title)
         # Create a challenge
-        gDefier_model.create_defy(self, user, block_title)
+        gDefier_model.create_defy(self, user, block_title, size)
         self.redirect('/gDefier/block?title=' + block_title)
 
     def reject_request(self, user, block_title):
@@ -142,7 +143,7 @@ class BlocksHandler(BaseHandler):
             self.send_request(self.request.get('request'), block_title)
             
         if self.request.get('accept'):
-            self.accept_request(self.request.get('accept'), block_title)
+            self.accept_request(self.request.get('accept'), block_title, course_info['module']['defy']['n_round'])
 
         if self.request.get('reject'):
             self.reject_request(self.request.get('reject'), block_title)
@@ -209,18 +210,29 @@ class ArenaHandler(BaseHandler):
     
     def academy_answer(self, khandata):
         data = models.EventEntity.get(khandata)
+        js_data = json.loads(data.data)
         
-        if self.get_user().user_id() == data.user_id:
-            print data.data
-            
-    def end_defy(self, defy_key):
+        # Getting the defy key presented in the location attribute of the model entity
+        # Nothing has to be after defy in location...
+        defy_key =  js_data['location'].split("defy%253D")[-1]
         defy = db.get(defy_key)
-        nick = self.get_user().nickname()
-        if defy.rname == nick:
+        gDefier_model.answer_solver(self, defy, js_data)
+            
+    def end_defy(self, defy_key, side, n_defies):
+        
+        defy = db.get(defy_key)
+        if side == 'right':
             defy.rended = True
+            if defy.lended:
+                # Defy completely ENDED (2 sides)
+                gDefier_model.defy_solver(self, defy, n_defies)
         else:
             defy.lended = True
+            if defy.rended:
+                # Defy completely ENDED (2 sides)
+                gDefier_model.defy_solver(self, defy, n_defies)
         defy.put()
+        self.redirect('/gDefier/arena?defy=' + defy_key)
     
     def get(self):
         """Handles GET requests."""
@@ -234,17 +246,28 @@ class ArenaHandler(BaseHandler):
         
         defy_key = self.request.get('defy')
         
+        course_info = get_course_dict()   
+        
         # Cathing END exercise
         if self.request.get('end'):
-            self.end_defy(defy_key)
+            self.end_defy(defy_key, self.request.get('end'), course_info['module']['n_defies'])
 
         defy = gDefier_model.GDefierDefy.get(defy_key)
         
-        course_info = get_course_dict()   
         
         path = sites.abspath(self.app_context.get_home_folder(),
                      GCB_GDEFIER_FOLDER_NAME)
         page = 'templates/gDefier_arena.html'        
+
+        nick = self.get_user().nickname()
+        if defy.rname == nick:
+            side = 'right'
+        elif defy.lname == nick:
+            side = 'left'
+        else:
+            side = None
+            # Defy from others users...
+            page = 'error.html'
         
         """ Getting rounds per defy and possible questions of this bloc"""
         rounds = course_info['module']['defy']['n_round']
@@ -257,12 +280,6 @@ class ArenaHandler(BaseHandler):
         questions = [i+j for i,j in zip(question[::2],question[1::2])]
         
         t_round = course_info['module']['defy']['round_time']
-
-        nick = self.get_user().nickname()
-        if defy.rname == nick:
-            side = 'right'
-        else:
-            side = 'left'
 
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
@@ -301,12 +318,12 @@ class StudentDefierHandler(BaseHandler):
                 registration = True
         else:
             registration = False
-                
-        self.template_value['gDefier_transient_student'] = registration
         
         template = self.get_template(page, additional_dirs=[path])
+        self.template_value['gDefier_transient_student'] = registration
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['entity'] = get_course_dict()
+        self.template_value['player'] = gDefier_model.get_player(self)
         self.render(template)
 
 class GDefierDashboardHandler(object):

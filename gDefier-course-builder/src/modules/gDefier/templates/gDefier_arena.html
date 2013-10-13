@@ -79,7 +79,7 @@ display: none;
 
 var t_round = "{{ t_round }}";
 //var counter = 60000 * t_round;
-var counter = 30000;
+var counter = 10000;
 
 $( "#first" ).click(function() {
 	$( "#countdown" ).show( "fast");
@@ -97,7 +97,7 @@ $( "#last" ).click(function() {
 	update_countdown(counter)
     setTimeout(function() {
     	$( "#khan2" ).hide();
-    	window.location = window.location + '&end=END';
+    	window.location = window.location + '&end={{side}}';
     }, counter);
 });
 
