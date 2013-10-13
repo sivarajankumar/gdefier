@@ -8,21 +8,21 @@
 }
 /* line 17, ../sass/screen.scss */
 #wrapper {
-  width: 900px;
+  width: 860px;
   margin: 10px auto 0 auto;
 }
 
 /* line 22, ../sass/screen.scss */
 .cool_btn1 {
-  width: 190px;
-  height: 190px;
-  margin: 15px 15px 15px 15px;
+  width: 120px;
+  height: 120px;
+  margin: 10px 10px 10px 10px;
   position: relative;
-  -webkit-border-radius: 200px;
-  -moz-border-radius: 200px;
-  -ms-border-radius: 200px;
-  -o-border-radius: 200px;
-  border-radius: 200px;
+  -webkit-border-radius: 120px;
+  -moz-border-radius: 120px;
+  -ms-border-radius: 120px;
+  -o-border-radius: 120px;
+  border-radius: 120px;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fafafa), color-stop(50%, #e3e3e3), color-stop(50%, #888888), color-stop(100%, #666666));
   background-image: -webkit-linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);
   background-image: -moz-linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);
@@ -36,8 +36,8 @@
 /* line 31, ../sass/screen.scss */
 .cool_btn1 h1 {
   text-align: center;
-  font-size: 50px;
-  margin: 20px 0 0 0;
+  font-size: 30px;
+  margin: 15px 0 0 0;
   color: #333;
   text-shadow: 0 1px 0 white, 0 -1px 0 rgba(0, 0, 0, 0.5);
   font-family: 'Lobster', cursive;
@@ -48,7 +48,7 @@
 .cool_btn1 h1 i {
   display: block;
   font-style: normal;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   font-family: helvetica, arial, sans-serif;
   text-shadow: none;
@@ -58,43 +58,43 @@
   font-family: 'ModernPictogramsNormal', Arial, sans-serif;
   font-weight: normal;
   text-align: center;
-  font-size: 90px;
+  font-size: 45px;
   line-height: 1;
-  margin: 15px 0 0 0;
+  margin: 12px 0 0 0;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 -1px 0px rgba(0, 0, 0, 0.8);
   color: #fafafa;
 }
 
-/* line 60, ../sass/screen.scss */
-.cool_btn1:after {
-  content: "";
-  width: 200px;
-  height: 200px;
-  display: block;
-  position: absolute;
-  left: -5px;
-  top: -5px;
-  z-index: -1;
-  -webkit-border-radius: 200px;
-  -moz-border-radius: 200px;
-  -ms-border-radius: 200px;
-  -o-border-radius: 200px;
-  border-radius: 200px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #cecece), color-stop(100%, #e7e7e7));
-  background-image: -webkit-linear-gradient(#cecece, #e7e7e7);
-  background-image: -moz-linear-gradient(#cecece, #e7e7e7);
-  background-image: -o-linear-gradient(#cecece, #e7e7e7);
-  background-image: linear-gradient(#cecece, #e7e7e7);
-   -webkit-box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9);
-  -moz-box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9);
-}
+/* /* line 60, ../sass/screen.scss */ */
+/* .cool_btn1:after { */
+/*   content: ""; */
+/*   width: 120px; */
+/*   height: 120px; */
+/*   display: block; */
+/*   position: absolute; */
+/*   left: -5px; */
+/*   top: -5px; */
+/*   z-index: -1; */
+/*   -webkit-border-radius: 120px; */
+/*   -moz-border-radius: 120px; */
+/*   -ms-border-radius: 120px; */
+/*   -o-border-radius: 120px; */
+/*   border-radius: 120px; */
+/*   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #cecece), color-stop(100%, #e7e7e7)); */
+/*   background-image: -webkit-linear-gradient(#cecece, #e7e7e7); */
+/*   background-image: -moz-linear-gradient(#cecece, #e7e7e7); */
+/*   background-image: -o-linear-gradient(#cecece, #e7e7e7); */
+/*   background-image: linear-gradient(#cecece, #e7e7e7); */
+/*    -webkit-box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9); */
+/*   -moz-box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9); */
+/*   box-shadow: 0 1px 0px rgba(255, 255, 255, 0.9); */
+/* } */
 
 /* -------------------
 Transitions
 -------------------- */
 /* line 76, ../sass/screen.scss */
-.cool_btn1.blue, .cool_btn1.teal, .cool_btn1.orange, .cool_btn1.green {
+.cool_btn1.blue, .cool_btn1.teal, .cool_btn1.orange, .cool_btn1.green, .cool_btn1.red {
   -webkit-transition-property: all;
   -moz-transition-property: all;
   -o-transition-property: all;
@@ -177,6 +177,57 @@ Colors
   color: #006312;
 }
 
+/* line 111, ../sass/screen.scss */
+.cool_btn1.red {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d5d5d5), color-stop(50%, #ffffff), color-stop(50%, #FE2E2E), color-stop(100%, #610B0B));
+  background-image: -webkit-linear-gradient(#d5d5d5, #ffffff 50%, #FE2E2E 50%, #610B0B);
+  background-image: -moz-linear-gradient(#d5d5d5, #ffffff 50%, #FE2E2E 50%, #610B0B);
+  background-image: -o-linear-gradient(#d5d5d5, #ffffff 50%, #FE2E2E 50%, #610B0B);
+  background-image: linear-gradient(#d5d5d5, #ffffff 50%, #FE2E2E 50%, #610B0B);
+}
+/* line 113, ../sass/screen.scss */
+.cool_btn1.red h1 {
+  color: #FE2E2E;
+}
+/* line 116, ../sass/screen.scss */
+.cool_btn1.red h2 {
+  color: #610B0B;
+}
+
+/* line 111, ../sass/screen.scss */
+.cool_btn1.yellow {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d5d5d5), color-stop(50%, #ffffff), color-stop(50%, #F7FE2E), color-stop(100%, #5E610B));
+  background-image: -webkit-linear-gradient(#d5d5d5, #ffffff 50%, #F7FE2E 50%, #5E610B);
+  background-image: -moz-linear-gradient(#d5d5d5, #ffffff 50%, #F7FE2E 50%, #5E610B);
+  background-image: -o-linear-gradient(#d5d5d5, #ffffff 50%, #F7FE2E 50%, #5E610B);
+  background-image: linear-gradient(#d5d5d5, #ffffff 50%, #F7FE2E 50%, #5E610B);
+}
+/* line 113, ../sass/screen.scss */
+.cool_btn1.yellow h1 {
+  color: #D7DF01;
+}
+/* line 116, ../sass/screen.scss */
+.cool_btn1.yellow h2 {
+  color: #5E610B;
+}
+
+/* line 111, ../sass/screen.scss */
+.cool_btn1.magent {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d5d5d5), color-stop(50%, #ffffff), color-stop(50%, #D358F7), color-stop(100%, #6A0888));
+  background-image: -webkit-linear-gradient(#d5d5d5, #ffffff 50%, #D358F7 50%, #6A0888);
+  background-image: -moz-linear-gradient(#d5d5d5, #ffffff 50%, #D358F7 50%, #6A0888);
+  background-image: -o-linear-gradient(#d5d5d5, #ffffff 50%, #D358F7 50%, #6A0888);
+  background-image: linear-gradient(#d5d5d5, #ffffff 50%, #D358F7 50%, #6A0888);
+}
+/* line 113, ../sass/screen.scss */
+.cool_btn1.magent h1 {
+  color: #D358F7;
+}
+/* line 116, ../sass/screen.scss */
+.cool_btn1.magent h2 {
+  color: #6A0888;
+}
+
 /* -------------------
 Hover States
 -------------------- */
@@ -189,9 +240,9 @@ Hover States
 
 /* line 128, ../sass/screen.scss */
 .cool_btn1.teal:hover {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(16, 216, 252, 0.8);
-  -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(16, 216, 252, 0.8);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(16, 216, 252, 0.8);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8;
+  -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8;
 }
 
 /* line 133, ../sass/screen.scss */
@@ -207,6 +258,28 @@ Hover States
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(47, 217, 29, 0.8);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(47, 217, 29, 0.8);
 }
+
+/* line 138, ../sass/screen.scss */
+.cool_btn1.red:hover {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
+  -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
+}
+
+/* line 138, ../sass/screen.scss */
+.cool_btn1.yellow:hover {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
+  -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
+}
+
+/* line 138, ../sass/screen.scss */
+.cool_btn1.magent:hover {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
+  -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
+}
+
 
 /* -------------------
 Media Queries
