@@ -20,21 +20,23 @@ Arena
 
 {% if side == 'left' %}
 	{% set side_ended = defy.lended %}
+	{% set defy_round = defy.lround %}
 {% else %}
 	{% set side_ended = defy.rended %}
+	{% set defy_round = defy.rround %}
 {% endif %}
 
 {% if not side_ended%}
 	<div align=center class= "container">
 		<div class="countdown retro" id="countdown"></div>
 	</div>
-	{% for number in range(questions.__len__()) %}
+	{% for number in range(rounds) %}
 		{% if number==0 %}
 			<button id="first">First round</button>
-		{% elif number==questions.__len__()-1 %}
+		{% elif number==rounds-1 %}
 			<button id="last">Last round</button>
 		{% else %}
-			<button id="next">Next round</button>
+			<button id="next{{number}}" onclick="next_button({{number}})">Next round</button>
 		{% endif %}
 	 	<div align=center id="khan{{number+1}}">
 			{{ questions[number] | gcb_tags}}
@@ -57,20 +59,29 @@ Arena
 {% include 'resources/css/buttons.css' %}
 {% include 'resources/countdown/style.css' %}
 
-#khan1 {
-display: none;
-float: center;
-}
-#khan2 {
-display: none;
-float: center;
-}
-#last,#next {
+{% if defy_round == 0 %}
+#last, [id^="next"], [id^="khan"], #countdown{
 display: none;
 }
-#countdown {
-display: none;
-}
+{% else %}
+	{% if rounds <=  2 %}
+	#first, #khan0{
+	display: none;
+	}
+	{% elif rounds == defy_round+1 %}	
+	#first, [id^="next"], [id^="khan"], #countdown {
+	display: none;
+	}	
+	{% else %}
+	#first, #last, [id^="next"], [id^="khan"], #countdown {
+	display: none;
+	}	
+	[id$="next{{defy_round}}"] {
+	display: inline;
+	}	
+	{% endif %}
+{% endif %}	
+	
 </style>
 
 <script type='text/javascript'>
@@ -79,24 +90,64 @@ display: none;
 
 var t_round = "{{ t_round }}";
 //var counter = 60000 * t_round;
-var counter = 10000;
+var counter = 5000;
+
+var rounds = "{{ rounds }}";
+var defy_round = "{{ defy_round }}";
 
 $( "#first" ).click(function() {
 	$( "#countdown" ).show( "fast");
-	$( "#khan1" ).show( "fast");
+	$( "#khan1" ).show("fast");
 	$( "#first" ).hide();
 	countdown(counter);
     setTimeout(function() {
     	$( "#khan1" ).hide();
-    	$( "#last" ).show( "fast");
+    	if (rounds>2){
+    		$("#next1").show("fast");
+    		$.post( window.location, { button: 1, side: "{{side}}"});
+    	}else if (rounds=2){
+    		$( "#last" ).show("fast");
+    		$.post( window.location, { button: 1, side: "{{side}}"});
+    	} else {
+        	window.location = window.location + '&end={{side}}';
+    	}
     }, counter);
 });
-$( "#last" ).click(function() {
-	$( "#khan2" ).show( "fast");
-	$( "#last" ).hide();
-	update_countdown(counter)
+
+function next_button(i) {
+	$("#khan"+(i+1).toString()).show("fast");
+	$("#next"+(i).toString()).hide();
+	if (defy_round>0){
+		$( "#countdown" ).show( "fast");
+		countdown(counter);
+	}else
+		update_countdown(counter);
     setTimeout(function() {
-    	$( "#khan2" ).hide();
+    	$("#khan"+(i+1).toString()).hide();
+		if (i == rounds-2){
+			$("#last").show("fast");
+			$.post( window.location, { button: i+1, side: "{{side}}"});
+		}else{
+			$("#next"+(i+1).toString()).show("fast");
+			$.post( window.location, { button: i+1, side: "{{side}}"});
+		}
+    }, counter);
+}
+
+$( "#last" ).click(function() {
+	if (round=2)
+		$( "#khan2" ).show( "fast");
+	else if (round>2)
+		$("#khan"+rounds.toString()).show( "fast");
+	
+	$( "#last" ).hide();
+	if (defy_round>0){
+		$( "#countdown" ).show( "fast");
+		countdown(counter);
+	}else
+		update_countdown(counter);
+    setTimeout(function() {
+    	$("#khan"+rounds.toString()).hide();
     	window.location = window.location + '&end={{side}}';
     }, counter);
 });

@@ -181,8 +181,8 @@ class GDefierDefy(db.Model):
     lname = db.StringProperty(indexed=True, required=True)
     rscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
     lscore = db.ListProperty(item_type=int,default=[0,0,0,0]) # Should be [Score,Attempts,fails,Hints]
-    rrounds = db.ListProperty(item_type=int, required=True)
-    lrounds = db.ListProperty(item_type=int, required=True)
+    rround = db.IntegerProperty(indexed=False, default=0)
+    lround = db.IntegerProperty(indexed=False, default=0)
     rtime = db.TimeProperty(indexed=False)
     ltime = db.TimeProperty(indexed=False)
 
@@ -315,14 +315,10 @@ def create_board(self, blocks):
         return aux_board
     return board
 
-def create_defy(self, user, blockID, size):
+def create_defy(self, user, blockID):
     block = GDefierBoardBlock.gql("WHERE blockID = '" + blockID + "'").get()
     print "Creating Defy..."
-    rounds = []
-    for x in range(size):
-        rounds.append(0)
-    print rounds
-    GDefierDefy(block_board=block, rname=user, lname=self.get_user().nickname(), rrounds = rounds, lrounds = rounds).put()
+    GDefierDefy(block_board=block, rname=user, lname=self.get_user().nickname()).put()
     
 def player_defies(self, blockID):
     nick = self.get_user().nickname()   

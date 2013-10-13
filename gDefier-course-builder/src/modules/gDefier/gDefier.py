@@ -117,10 +117,10 @@ class BlocksHandler(BaseHandler):
         gDefier_model.add_request_challenge(self, user, block_title)  
         self.redirect('/gDefier/block?title=' + block_title)
 
-    def accept_request(self, user, block_title, size):  
+    def accept_request(self, user, block_title):  
         gDefier_model.del_request_challenge(self, user, block_title)
         # Create a challenge
-        gDefier_model.create_defy(self, user, block_title, size)
+        gDefier_model.create_defy(self, user, block_title)
         self.redirect('/gDefier/block?title=' + block_title)
 
     def reject_request(self, user, block_title):
@@ -143,7 +143,7 @@ class BlocksHandler(BaseHandler):
             self.send_request(self.request.get('request'), block_title)
             
         if self.request.get('accept'):
-            self.accept_request(self.request.get('accept'), block_title, course_info['module']['defy']['n_round'])
+            self.accept_request(self.request.get('accept'), block_title)
 
         if self.request.get('reject'):
             self.reject_request(self.request.get('reject'), block_title)
@@ -218,8 +218,7 @@ class ArenaHandler(BaseHandler):
         defy = db.get(defy_key)
         gDefier_model.answer_solver(self, defy, js_data)
             
-    def end_defy(self, defy_key, side, n_defies):
-        
+    def end_defy(self, defy_key, side, n_defies): 
         defy = db.get(defy_key)
         if side == 'right':
             defy.rended = True
@@ -233,6 +232,17 @@ class ArenaHandler(BaseHandler):
                 gDefier_model.defy_solver(self, defy, n_defies)
         defy.put()
         self.redirect('/gDefier/arena?defy=' + defy_key)
+    
+    def post(self):
+        button = self.request.get('button')
+        side = self.request.get('side')
+        defy_key = self.request.get('defy')
+        defy = db.get(defy_key)
+        if side == 'right':
+            defy.rround = int(button)
+        else:
+            defy.lround = int(button)
+        defy.put()
     
     def get(self):
         """Handles GET requests."""
@@ -275,12 +285,13 @@ class ArenaHandler(BaseHandler):
             if defy.block_board.blockID == b['block_title']:
                 question = b['question_cast']
                 break
-        
         question = re.findall('[^>]+>', question)
         questions = [i+j for i,j in zip(question[::2],question[1::2])]
         
         t_round = course_info['module']['defy']['round_time']
-
+        
+        print defy.rround
+        print defy.lround
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['defy'] = defy
@@ -288,6 +299,7 @@ class ArenaHandler(BaseHandler):
         self.template_value['rounds'] = rounds
         self.template_value['t_round'] = t_round
         self.template_value['side'] = side
+        self.template_value['self'] = self
         self.render(template)
 
 class StudentDefierHandler(BaseHandler):
