@@ -44,7 +44,6 @@ from google.appengine.api import users
 
 GCB_GDEFIER_FOLDER_NAME = os.path.normpath('/modules/gDefier/')
 DFR_CONFIG_FILENAME = os.path.normpath('/gDefier.yaml')
-RESOURCES_PATH = '/modules/gDefier/resources'
 
 custom_module = None
 

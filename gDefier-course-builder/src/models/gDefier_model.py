@@ -349,15 +349,19 @@ def defy_solver(self, defy, n_defies):
                 winner="l"
             else:
                 """ TODO hyper TIED"""
+                """ By now, both lost the challengue"""
                 pass 
 
     ralumn = GDefierPlayer.gql("WHERE name = '" + defy.rname +"'").get()   
     for b in ralumn.blocks:
         if b.blockID == block.blockID:
-            for s in range(len(defy.rscore)): 
-                ralumn.total_score[s] += defy.rscore[s]
-                b.score[s] += defy.rscore[s]
+            for s in range(len(defy.rscore)):
+                if not s==0: # NOT giving score if lost
+                    ralumn.total_score[s] += defy.rscore[s]
+                    b.score[s] += defy.rscore[s]
             if winner=="r":
+                ralumn.total_score[0] += defy.rscore[0]
+                b.score[s] += defy.rscore[s]
                 b.wins += 1
                 ralumn.win_lost[0] += 1
                 if b.wins >= n_defies:
@@ -372,10 +376,13 @@ def defy_solver(self, defy, n_defies):
     lalumn = GDefierPlayer.gql("WHERE name = '" + defy.lname +"'").get()
     for b in lalumn.blocks:
         if b.blockID == block.blockID:
-            for s in range(len(defy.lscore)): 
-                lalumn.total_score[s] += defy.lscore[s]
-                b.score[s] += defy.lscore[s]
+            for s in range(len(defy.lscore)):
+                if not s==0:
+                    lalumn.total_score[s] += defy.lscore[s]
+                    b.score[s] += defy.lscore[s]
             if winner=="l":
+                lalumn.total_score[0] += defy.lscore[0]
+                b.score[s] += defy.lscore[s]
                 b.wins += 1
                 lalumn.win_lost[0] += 1
                 if b.wins >= n_defies:
