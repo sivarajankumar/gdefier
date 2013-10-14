@@ -32,11 +32,12 @@ Arena
 	</div>
 	{% for number in range(rounds) %}
 		{% if number==0 %}
-			<button id="first">First round</button>
+			<br><br>
+		    <button class="push_button" id="first">START</button>
 		{% elif number==rounds-1 %}
-			<button id="last">Last round</button>
+			<button class="push_button" id="last">LAST</button>
 		{% else %}
-			<button id="next{{number}}" onclick="next_button({{number}})">Next round</button>
+			<button class="push_button" id="next{{number}}" onclick="next_button({{number}})">NEXT</button>
 		{% endif %}
 	 	<div align=center id="khan{{number+1}}">
 			{{ questions[number] | gcb_tags}}
@@ -57,6 +58,7 @@ Arena
 
 <style type="text/css">
 {% include 'resources/css/buttons.css' %}
+{% include 'resources/css/buttons2.css' %}
 {% include 'resources/countdown/style.css' %}
 
 {% if defy_round == 0 %}
@@ -65,7 +67,7 @@ display: none;
 }
 {% else %}
 	{% if rounds <=  2 %}
-	#first, #khan0{
+	#first, [id^="khan"], #countdown{
 	display: none;
 	}
 	{% elif rounds == defy_round+1 %}	
@@ -90,7 +92,7 @@ display: none;
 
 var t_round = "{{ t_round }}";
 //var counter = 60000 * t_round;
-var counter = 5000;
+var counter = 10000;
 
 var rounds = "{{ rounds }}";
 var defy_round = "{{ defy_round }}";
@@ -99,15 +101,15 @@ $( "#first" ).click(function() {
 	$( "#countdown" ).show( "fast");
 	$( "#khan1" ).show("fast");
 	$( "#first" ).hide();
+	if (rounds != 1)
+		$.post( window.location, { button: 1, side: "{{side}}"});
 	countdown(counter);
     setTimeout(function() {
     	$( "#khan1" ).hide();
     	if (rounds>2){
-    		$("#next1").show("fast");
-    		$.post( window.location, { button: 1, side: "{{side}}"});
-    	}else if (rounds=2){
+    		$("#next1").show("fast");    		
+    	} else if (rounds==2){
     		$( "#last" ).show("fast");
-    		$.post( window.location, { button: 1, side: "{{side}}"});
     	} else {
         	window.location = window.location + '&end={{side}}';
     	}
@@ -117,6 +119,7 @@ $( "#first" ).click(function() {
 function next_button(i) {
 	$("#khan"+(i+1).toString()).show("fast");
 	$("#next"+(i).toString()).hide();
+	$.post( window.location, { button: i+1, side: "{{side}}"});
 	if (defy_round>0){
 		$( "#countdown" ).show( "fast");
 		countdown(counter);
@@ -126,18 +129,16 @@ function next_button(i) {
     	$("#khan"+(i+1).toString()).hide();
 		if (i == rounds-2){
 			$("#last").show("fast");
-			$.post( window.location, { button: i+1, side: "{{side}}"});
 		}else{
 			$("#next"+(i+1).toString()).show("fast");
-			$.post( window.location, { button: i+1, side: "{{side}}"});
 		}
     }, counter);
 }
 
 $( "#last" ).click(function() {
-	if (round=2)
+	if (rounds==2)
 		$( "#khan2" ).show( "fast");
-	else if (round>2)
+	else if (rounds>2)
 		$("#khan"+rounds.toString()).show( "fast");
 	
 	$( "#last" ).hide();

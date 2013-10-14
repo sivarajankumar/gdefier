@@ -1,0 +1,47 @@
+/****************************************************
+ * 	Push Button
+ *****************************************************/
+@import url('http://fonts.googleapis.com/css?family=Lobster');
+.push_button{
+	position:relative;
+	width:200px;
+	
+	color:#FFF;
+	border:solid 1px #D94E3B;
+	background:#cb3b27;
+	-webkit-box-shadow: 0px 9px 0px #84261a;
+    -moz-box-shadow: 0px 9px 0px #84261a;
+    box-shadow: 0px 9px 0px #84261a;
+
+	display:block;
+	text-decoration:none;
+	margin:0 auto;
+	border-radius:5px;
+
+	text-align:center;
+	padding:20px 30px;
+	
+	font-family: 'Lobster';
+	font-size: 200%;
+    
+	-webkit-transition: all 0.1s;
+	-moz-transition: all 0.1s;
+	transition: all 0.1s;
+}
+
+.push_button:active{
+    -webkit-box-shadow: 0px 2px 0px #84261a;
+    -moz-box-shadow: 0px 2px 0px #84261a;
+    box-shadow: 0px 2px 0px #84261a;
+    position:relative;
+    top:7px;
+	font-family: 'Lobster';
+	font-size:200%;
+}
+
+.push_button:hover {
+	cursor: crosshair;
+/*   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E; */
+/*   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E; */
+/*   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E; */
+}
