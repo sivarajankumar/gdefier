@@ -329,12 +329,21 @@ class StudentDefierHandler(BaseHandler):
                 registration = True
         else:
             registration = False
+            
+        entity = get_course_dict()
+        player = gDefier_model.get_player(self)
+        
+        prctng = []
+        for b in player.blocks:
+            n = int(b.wins*100/entity['module']['n_defies'])
+            prctng.append("n"+str(n))
         
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['gDefier_transient_student'] = registration
         self.template_value['navbar'] = {'gDefier': True}
-        self.template_value['entity'] = get_course_dict()
-        self.template_value['player'] = gDefier_model.get_player(self)
+        self.template_value['entity'] = entity
+        self.template_value['player'] = player
+        self.template_value['prctng'] = prctng
         self.render(template)
 
 class GDefierDashboardHandler(object):

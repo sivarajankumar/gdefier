@@ -412,3 +412,4 @@ def answer_solver(self, defy, js_data):
         defy.lscore[2] += js_data['attempt_number']-1
         defy.lscore[3] += js_data['count_hints']
     defy.put()
+    
