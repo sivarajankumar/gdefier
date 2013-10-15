@@ -302,6 +302,19 @@ class ArenaHandler(BaseHandler):
         self.render(template)
 
 class StudentDefierHandler(BaseHandler):
+    
+    def post(self):
+        type = self.request.get('classification')
+        classification = type
+        
+        x =gDefier_model.GDefierPlayer.all()
+        y = x.order('-'+type)
+        for z in y:
+            print z.name , z.score
+        
+        self.response.out.write(classification)
+        
+            
     """Handlers of gDefier Module for student workspace"""
     def get(self):
         """Handles GET requests."""
@@ -335,6 +348,8 @@ class StudentDefierHandler(BaseHandler):
         
         prctng = []
         for b in player.blocks:
+            print b.blockID
+            print b.wins
             n = int(b.wins*100/entity['module']['n_defies'])
             prctng.append("n"+str(n))
         

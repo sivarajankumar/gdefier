@@ -136,8 +136,12 @@ class GDefierGroup(db.Model):
 
 class GDefierPlayer(db.Model):
     name = db.StringProperty(indexed=True, required=True)
-    total_score = db.ListProperty(item_type=int, required=True, default=[0,0,0,0])
-    win_lost = db.ListProperty(item_type=int, required=True, default=[0,0])
+    score = db.IntegerProperty(indexed=True, default=0)
+    attempts = db.IntegerProperty(indexed=True, default=0)
+    fails = db.IntegerProperty(indexed=True, default=0)
+    hints = db.IntegerProperty(indexed=True, default=0)
+    wins = db.IntegerProperty(indexed=True, default=0)
+    lost = db.IntegerProperty(indexed=True, default=0)
     """r_on = db.BooleanProperty(indexed=False, default=False)
     r_count = db.IntegerProperty(indexed=False, default=0)
     r_done = db.BooleanProperty(indexed=False, default=False)
@@ -355,20 +359,22 @@ def defy_solver(self, defy, n_defies):
     ralumn = GDefierPlayer.gql("WHERE name = '" + defy.rname +"'").get()   
     for b in ralumn.blocks:
         if b.blockID == block.blockID:
+            ralumn.attempts += defy.rscore[1]
+            ralumn.fails += defy.rscore[2]
+            ralumn.hints += defy.rscore[3]
             for s in range(len(defy.rscore)):
                 if not s==0: # NOT giving score if lost
-                    ralumn.total_score[s] += defy.rscore[s]
                     b.score[s] += defy.rscore[s]
             if winner=="r":
-                ralumn.total_score[0] += defy.rscore[0]
-                b.score[s] += defy.rscore[s]
+                ralumn.score += defy.rscore[0]
+                b.score[0] += defy.rscore[0]
                 b.wins += 1
-                ralumn.win_lost[0] += 1
+                ralumn.wins += 1
                 if b.wins >= n_defies:
                     b.done = True
             else:
                 b.lost += 1
-                ralumn.win_lost[1] += 1
+                ralumn.lost += 1
             b.put()
             break
     ralumn.put()
@@ -376,20 +382,22 @@ def defy_solver(self, defy, n_defies):
     lalumn = GDefierPlayer.gql("WHERE name = '" + defy.lname +"'").get()
     for b in lalumn.blocks:
         if b.blockID == block.blockID:
+            lalumn.attempts += defy.lscore[1]
+            lalumn.fails += defy.lscore[2]
+            lalumn.hints += defy.lscore[3]
             for s in range(len(defy.lscore)):
                 if not s==0:
-                    lalumn.total_score[s] += defy.lscore[s]
                     b.score[s] += defy.lscore[s]
             if winner=="l":
-                lalumn.total_score[0] += defy.lscore[0]
-                b.score[s] += defy.lscore[s]
+                lalumn.score += defy.lscore[0]
+                b.score[0] += defy.lscore[0]
                 b.wins += 1
-                lalumn.win_lost[0] += 1
+                lalumn.wins += 1
                 if b.wins >= n_defies:
                     b.done = True
             else:
                 b.lost += 1
-                lalumn.win_lost[1] += 1
+                lalumn.lost += 1
             b.put()
             break
     lalumn.put()

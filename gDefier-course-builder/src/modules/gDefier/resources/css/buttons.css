@@ -233,6 +233,7 @@ Hover States
 -------------------- */
 /* line 123, ../sass/screen.scss */
 .cool_btn1.orange:hover {
+		cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(255, 174, 0, 0.8);
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(255, 174, 0, 0.8);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(255, 174, 0, 0.8);
@@ -240,6 +241,7 @@ Hover States
 
 /* line 128, ../sass/screen.scss */
 .cool_btn1.teal:hover {
+		cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8;
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #0187b8;
@@ -247,6 +249,7 @@ Hover States
 
 /* line 133, ../sass/screen.scss */
 .cool_btn1.blue:hover {
+		cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(43, 95, 187, 0.8);
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(43, 95, 187, 0.8);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(43, 95, 187, 0.8);
@@ -254,6 +257,7 @@ Hover States
 
 /* line 138, ../sass/screen.scss */
 .cool_btn1.green:hover {
+		cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(47, 217, 29, 0.8);
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(47, 217, 29, 0.8);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(47, 217, 29, 0.8);
@@ -261,6 +265,7 @@ Hover States
 
 /* line 138, ../sass/screen.scss */
 .cool_btn1.red:hover {
+		cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #FE2E2E;
@@ -268,6 +273,7 @@ Hover States
 
 /* line 138, ../sass/screen.scss */
 .cool_btn1.yellow:hover {
+  cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #5E610B;
@@ -275,6 +281,7 @@ Hover States
 
 /* line 138, ../sass/screen.scss */
 .cool_btn1.magent:hover {
+  cursor:crosshair;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
   -moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px #6A0888;
