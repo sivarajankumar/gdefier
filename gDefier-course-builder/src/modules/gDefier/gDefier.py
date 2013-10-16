@@ -288,9 +288,7 @@ class ArenaHandler(BaseHandler):
         questions = [i+j for i,j in zip(question[::2],question[1::2])]
         
         t_round = course_info['module']['defy']['round_time']
-        
-        print defy.rround
-        print defy.lround
+
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
         self.template_value['defy'] = defy
@@ -304,17 +302,26 @@ class ArenaHandler(BaseHandler):
 class StudentDefierHandler(BaseHandler):
     
     def post(self):
-        type = self.request.get('classification')
-        classification = type
+        kind = self.request.get('classification')
         
         x =gDefier_model.GDefierPlayer.all()
-        y = x.order('-'+type)
+        if kind=="score" or kind=="attempts" or kind=="wins":
+            ascend="-"
+        else:
+            ascend=""
+        y = x.order(ascend+kind)
+        result = """<div align=center><table>"""
+        me = self.get_user().nickname()
         for z in y:
-            print z.name , z.score
+            z = gDefier_model.to_dict(z)
+            if me == z["name"]:
+                result += """<tr style="color: black; background: white;"><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
+            else:
+                result += """<tr><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
+        result += "</table></div>"    
         
-        self.response.out.write(classification)
-        
-            
+        self.response.out.write(result)
+   
     """Handlers of gDefier Module for student workspace"""
     def get(self):
         """Handles GET requests."""
@@ -348,8 +355,6 @@ class StudentDefierHandler(BaseHandler):
         
         prctng = []
         for b in player.blocks:
-            print b.blockID
-            print b.wins
             n = int(b.wins*100/entity['module']['n_defies'])
             prctng.append("n"+str(n))
         

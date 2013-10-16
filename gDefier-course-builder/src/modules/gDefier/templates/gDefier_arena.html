@@ -6,12 +6,16 @@ Arena
 {% endblock subtitle %}
 
 {% block top_content %}
-  <a href="gDefier/block?title={{defy.block_board.blockID}}">
-  Go to block "{{defy.block_board.blockID}}"
-  </a>
-  <div class="gcb-cols">
-	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#F44F4F">
-	{{defy.lname}} VS {{defy.rname}}
+<center>
+<div class="breadcrumb">
+	<a href="gDefier/home">G-Defier Home</a>
+	<a href="gDefier/block?title={{defy.block_board.blockID}}" >Block "{{defy.block_board.blockID}}"</a>
+	<a class="active">Arena</a>
+</div>
+</center>
+<div class="gcb-cols">
+	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#555555">
+	{{defy.lname}}<font class="gcb-col-12 gcb-aside" align="center" color="#F44F4F"> VS </font>{{defy.rname}}
 	</h1>
 </div>
 {% endblock %}
@@ -27,21 +31,22 @@ Arena
 {% endif %}
 
 {% if not side_ended%}
+	<center>
 	<div align=center class= "container">
 		<div class="countdown retro" id="countdown"></div>
 	</div>
 	{% for number in range(rounds) %}
 		{% if number==0 %}
-			<br><br>
-		    <button class="push_button" id="first">START</button>
+		    <button class="button back blue xl" id="first">START</button>
 		{% elif number==rounds-1 %}
-			<button class="push_button" id="last">LAST</button>
+			<button class="button orange shield xl" id="last">LAST</button>
 		{% else %}
-			<button class="push_button" id="next{{number}}" onclick="next_button({{number}})">NEXT</button>
+			<button class="button blue brackets xl" data-icon="✔" id="next{{number}}" onclick="next_button({{number}})">NEXT</button>
 		{% endif %}
 	 	<div align=center id="khan{{number+1}}">
 			{{ questions[number] | gcb_tags}}
 		</div>
+	<center>
 	{% endfor %}
 {% else %}
 <div align=center class= "container">
@@ -60,6 +65,7 @@ Arena
 {% include 'resources/css/buttons.css' %}
 {% include 'resources/css/buttons2.css' %}
 {% include 'resources/countdown/style.css' %}
+{% include 'resources/css/breadcrumb.css' %}
 
 {% if defy_round == 0 %}
 #last, [id^="next"], [id^="khan"], #countdown{
@@ -85,7 +91,7 @@ display: none;
 {% endif %}	
 	
 </style>
-
+<!-- <script src="http://thecodeplayer.com/uploads/js/prefixfree-1.0.7.js" type="text/javascript" type="text/javascript"></script> -->
 <script type='text/javascript'>
 
 {% include 'resources/countdown/jquery.countdown.js' %}
@@ -120,11 +126,14 @@ function next_button(i) {
 	$("#khan"+(i+1).toString()).show("fast");
 	$("#next"+(i).toString()).hide();
 	$.post( window.location, { button: i+1, side: "{{side}}"});
-	if (defy_round>0){
+	
+	if($('#countdown').is(':visible'))
+		update_countdown(counter);
+	else{
 		$( "#countdown" ).show( "fast");
 		countdown(counter);
-	}else
-		update_countdown(counter);
+	}
+	
     setTimeout(function() {
     	$("#khan"+(i+1).toString()).hide();
 		if (i == rounds-2){
@@ -140,13 +149,15 @@ $( "#last" ).click(function() {
 		$( "#khan2" ).show( "fast");
 	else if (rounds>2)
 		$("#khan"+rounds.toString()).show( "fast");
-	
 	$( "#last" ).hide();
-	if (defy_round>0){
-		$( "#countdown" ).show( "fast");
-		countdown(counter);
-	}else
+	
+	if($('#countdown').is(':visible'))
 		update_countdown(counter);
+	else{
+		$( "#countdown" ).show("fast");
+		countdown(counter);
+	}
+	
     setTimeout(function() {
     	$("#khan"+rounds.toString()).hide();
     	window.location = window.location + '&end={{side}}';
@@ -168,5 +179,22 @@ function update_countdown(counter) {
        $('.countdown.retro').removeClass('ended').data('countdown').update(+(new Date) + counter).start();
 }
 </script>
+<!-- 	<nav class="demo"> -->
+		
+<!-- 		<a href="#" class="button  xl">Button</a> -->
+<!-- 		<a href="#" data-icon="✆" class="button blue brackets">Call</a> -->
+<!-- 		<a href="#" data-icon="✰" class="button pink serif skew glossy">Stars</a> -->
+<!-- 		<a href="#" data-icon="✿" title="Reddit" class="button green serif back xl glass icon"></a> -->
+		
+<!-- 		<br /> -->
+		
+<!-- 		<a href="#" data-icon="✍" class="button green">Blog</a> -->
+<!-- 		<a href="#" data-icon="☺" title="Love" class="button pink oval icon"></a> -->
+<!-- 		<a href="#" data-icon="✪" title="Quit" class="button orange shield xl glossy icon"></a> -->
+<!-- 		<a href="#" data-icon="" title="Upload" class="button blue back xl glass icon"></a> -->
+<!-- 		<a href="#" data-icon="✔" title="RSS" class="button orange drop glass icon"></a> -->
+		
 
+<!-- 	</nav> -->
+	
 {% endblock %}

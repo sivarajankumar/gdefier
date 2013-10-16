@@ -6,11 +6,17 @@ Block "{{ b_info.block_title }}"
 {% endblock subtitle %}
 
 {% block top_content %}
-<div class="gcb-cols">
-	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#555555">
-		G-Defier Block "{{ b_info.block_title }}"
-	</h1>
+<center>
+<div class="breadcrumb">
+	<a href="gDefier/home">G-Defier Home</a>
+	<a class="active" >Block "{{ b_info.block_title }}"</a>
 </div>
+</center>
+<!-- <div class="gcb-cols"> -->
+<!-- 	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#555555"> -->
+<!-- 		G-Defier Block "{{ b_info.block_title }}" -->
+<!-- 	</h1> -->
+<!-- </div> -->
 {% endblock %}
 
 {% block main_content %}
@@ -94,6 +100,7 @@ if (r==true) {
 </script>
 
 <style type="text/css">
+{% include 'resources/css/breadcrumb.css' %}
 .parent{
     width:100%;
     heigth: 100%;
