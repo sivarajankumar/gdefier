@@ -30,7 +30,7 @@ from models import courses
 from models import roles
 from models import transforms
 from models.courses import deep_dict_merge
-from models import gDefier_model
+import gDefier_model
 
 from tools import verify
 
@@ -356,8 +356,10 @@ class StudentDefierHandler(BaseHandler):
         prctng = []
         for b in player.blocks:
             n = int(b.wins*100/entity['module']['n_defies'])
-            prctng.append("n"+str(n))
-        
+            for i in range(entity['module']['blocks'].__len__()):
+                if entity['module']['blocks'][i]["block_title"]==b.blockID:
+                    prctng.insert(i, "n"+str(n))
+            
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['gDefier_transient_student'] = registration
         self.template_value['navbar'] = {'gDefier': True}
