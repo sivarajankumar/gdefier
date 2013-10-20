@@ -65,20 +65,20 @@ def create_gdefier_module_registry():
     module_opts.add_property(SchemaField(
         'module:max_defies', 'Max Defies', 'integer',
         description='Maximum number of playble defies in a block to get its score'))
-    module_opts.add_property(SchemaField(
-        'module:rally_block', 'Make Rally block active', 'boolean'))
-    module_opts.add_property(SchemaField(
-        'module:w_rally', 'Rally Weight', 'integer'))    
-    module_opts.add_property(SchemaField(
-        'module:n_rally', 'Rally size', 'integer',
-         description='Number of questions in a row to get Rally block'))
-    module_opts.add_property(SchemaField(
-        'module:editor_block', 'Make Editor block active', 'boolean'))
-    module_opts.add_property(SchemaField(
-        'module:w_editor', 'Editor Weight', 'integer'))    
-    module_opts.add_property(SchemaField(
-        'module:n_editor', 'Exercises to upload', 'integer',
-        description='Minimum Number of exercises to upload necessary to get Editor block'))
+#    module_opts.add_property(SchemaField(
+#        'module:rally_block', 'Make Rally block active', 'boolean'))
+#    module_opts.add_property(SchemaField(
+#        'module:w_rally', 'Rally Weight', 'integer'))    
+#    module_opts.add_property(SchemaField(
+#        'module:n_rally', 'Rally size', 'integer',
+#         description='Number of questions in a row to get Rally block'))
+#    module_opts.add_property(SchemaField(
+#        'module:editor_block', 'Make Editor block active', 'boolean'))
+#    module_opts.add_property(SchemaField(
+#        'module:w_editor', 'Editor Weight', 'integer'))    
+#    module_opts.add_property(SchemaField(
+#        'module:n_editor', 'Exercises to upload', 'integer',
+#        description='Minimum Number of exercises to upload necessary to get Editor block'))
 
     defy_type = module_opts.add_sub_registry('defy', 'Defy config')
 
