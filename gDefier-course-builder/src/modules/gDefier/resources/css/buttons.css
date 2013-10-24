@@ -1,7 +1,6 @@
 @import url('http://fonts.googleapis.com/css?family=Lobster');
 @font-face {
   font-family: 'ModernPictogramsNormal';
-  src: url("http://s202540075.onlinehome.us/codepen/fonts/modernpics-webfont.eot");
   src: url("http://s202540075.onlinehome.us/codepen/fonts/modernpics-webfont.eot?#iefix") format("embedded-opentype"), url("http://s202540075.onlinehome.us/codepen/fonts/modernpics-webfont.woff") format("woff"), url("http://s202540075.onlinehome.us/codepen/fonts/modernpics-webfont.ttf") format("truetype"), url("http://s202540075.onlinehome.us/codepen/fonts/modernpics-webfont.svg#ModernPictogramsNormal") format("svg");
   font-weight: normal;
   font-style: normal;
@@ -18,11 +17,11 @@
   height: 120px;
   margin: 10px 10px 10px 10px;
   position: relative;
-  -webkit-border-radius: 120px;
-  -moz-border-radius: 120px;
-  -ms-border-radius: 120px;
-  -o-border-radius: 120px;
-  border-radius: 120px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+/*   border-radius: 10px; */
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fafafa), color-stop(50%, #e3e3e3), color-stop(50%, #888888), color-stop(100%, #666666));
   background-image: -webkit-linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);
   background-image: -moz-linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);

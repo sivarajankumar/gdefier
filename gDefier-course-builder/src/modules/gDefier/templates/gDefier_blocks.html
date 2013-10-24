@@ -13,37 +13,41 @@ Block "{{ b_info.block_title }}"
 </div>
 </center>
 <!-- <div class="gcb-cols"> -->
-<!-- 	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#555555"> -->
-<!-- 		G-Defier Block "{{ b_info.block_title }}" -->
+<!-- 	<h1 id="H1" class="gcb-col-12 gcb-aside" align="center" style="color:#555555"> -->
+<!-- 		G-Defier Block "{{ b_info.block_title }}": {{b_info["w_block"]}}/{{w_module}} points -->
 <!-- 	</h1> -->
 <!-- </div> -->
 {% endblock %}
 
 {% block main_content %}
+<link href='http://fonts.googleapis.com/css?family=Loved+by+the+King|Raleway:400' rel='stylesheet' type='text/css'>
+<blockquote>
 <div class="parent">
+<div >
+	<h1 id="H1"  align="center" style="font-size: xx-large;color:#555555">
+		G-Defier Block "{{ b_info.block_title }}": {{b_info["w_block"]}}/{{w_module}} points
+	</h1>
+</div>
+
   <div class="left" align="center">
-        <h1> Stats </h1>
+	<h1 id="H1"> Waiting for... </h1>
+	    {% for key in b_stats recursive %}
+	    	{% if key == 'sends'%}
+ 		        <li>{{b_stats["sends"]}}</li>
+			{% endif %}
+	    {% endfor %}
+	<h1 id="H1"> Requests </h1>
 	    {% for key in b_stats recursive %}
 	    	{% if key == 'request'%}
-   		        <li>{{ key }} : 
    		        {% for inv in invitations recursive %}
-   		        	<a onclick="acceptRequest()" id="inv">{{inv}}</a> 
+   		        	<li><a onclick="acceptRequest()" id="inv">{{inv}}</a></li>
    		        {% endfor %}
-   		        </li>	
- 		    {% else %}
-    	        <li>{{ key }} : {{ b_stats[key] }}</li>	
 			{% endif %}
-
-	    {% endfor %}
-	    <br>
-        <h1> Block Info </h1>
-	    {% for key in b_info recursive %}
-	        <li>{{ key }} : {{ b_info[key] }}</li>	
 	    {% endfor %}
   </div>
   <div class="right" align="center">
-    <br>
-	Please choose an opponent to send an invitation:
+    <br><br>
+	Please choose an opponent<br> to send an invitation:
 	<form id="form1" method='get'>
 		<select size="{{players.__len__()}}" id="challenge2">
 			{% for p in players %}
@@ -56,7 +60,7 @@ Block "{{ b_info.block_title }}"
 	</button>
   </div>
   <div class="center" align="center">
-	<h1>My ongoing defies</h1>
+	<h1 id="H1">My ongoing defies</h1>
     {% for def in my_defies recursive %}
     	{% if not def.rended or not def.lended%} 
 	       	{% if user == def.rname%}    	
@@ -66,7 +70,7 @@ Block "{{ b_info.block_title }}"
 			{% endif %}
 	 	{% endif %}       
     {% endfor %}
-   	<h1>My ended defies</h1>
+   	<h1 id="H1">My ended defies</h1>
     {% for def in my_defies recursive %}
    		{% if def.rended and def.lended %}
 	       	{% if user == def.rname%}    	
@@ -78,7 +82,33 @@ Block "{{ b_info.block_title }}"
     {% endfor %}
   </div>
 </div>
-
+</blockquote>
+<div id='wrapper'>
+	<div class='cool_btn1 green' id='sticky-wins'>
+		<h1 class='top'>{{b_stats["wins"]}} <i>Wins</i></h1>
+		<h2>l</h2>
+	</div>
+	<div class='cool_btn1 red' id='sticky-lost'>
+		<h1 class='top'>{{b_stats["lost"]}} <i>Lost</i></h1>
+		<h2>L</h2>
+	</div>
+	<div class='cool_btn1 orange' id='sticky-score'>
+		<h1 class='top'>{{block.score[0]}}<i>Score</i></h1>
+		<h2>)</h2>
+	</div>
+	<div class='cool_btn1 teal' id='sticky-attempts'>
+		<h1 class='top'>{{block.score[1]}}<i>Attempts</i></h1>
+		<h2>Z</h2>
+	</div>
+	<div class='cool_btn1 magent' id='sticky-fails'>
+		<h1 class='top'>{{block.score[2]}}<i>Fails</i></h1>
+		<h2>x</h2>
+	</div>
+	<div class='cool_btn1 yellow' id='sticky-hints'>
+		<h1 class='top'>{{block.score[3]}}<i>Hints</i></h1>
+		<h2>?</h2>
+	</div>
+</div>
 <script>
 function displayResult(){
 	var x=document.getElementById("challenge2").selectedIndex;
@@ -100,7 +130,14 @@ if (r==true) {
 </script>
 
 <style type="text/css">
+{% include 'resources/css/buttons.css' %}
 {% include 'resources/css/breadcrumb.css' %}
+{% include 'resources/css/notebook.css' %}
+
+.cool_btn1 {
+border-radius: 10px;
+}
+
 .parent{
     width:100%;
     heigth: 100%;
@@ -124,6 +161,13 @@ if (r==true) {
     width:33%;
     height: 100%;    
     overflow:hidden;
-} 
+}
+
+#H1{
+font-family: Loved by the King;
+}
+blockquote{
+    width: 800px;
+}
 </style>
 {% endblock %}
