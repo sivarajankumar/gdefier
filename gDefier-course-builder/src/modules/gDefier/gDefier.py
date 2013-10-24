@@ -197,8 +197,10 @@ class BlocksHandler(BaseHandler):
 
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['navbar'] = {'gDefier': True}
+        self.template_value['w_module'] = course_info['module']['w_module']
         self.template_value['b_info'] = b_info
         self.template_value['b_stats'] = b_stats
+        self.template_value['block'] = block
         self.template_value['players'] = opponents
         self.template_value['invitations'] = invitations
         self.template_value['user'] = self.get_user().nickname()
@@ -312,12 +314,14 @@ class StudentDefierHandler(BaseHandler):
         y = x.order(ascend+kind)
         result = """<div align=center><table>"""
         me = self.get_user().nickname()
+        num = 1
         for z in y:
             z = gDefier_model.to_dict(z)
             if me == z["name"]:
-                result += """<tr style="color: black; background: white;"><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
+                result += """<tr style="color: black; background: white;"><td align="center" valign="middle">""" + str(num) + """. </td><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
             else:
-                result += """<tr><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
+                result += """<tr><td align="center" valign="middle">""" + str(num) + """. </td><td align="center" valign="middle">""" + z["name"] + """</td><td align="center" valign="middle">""" + z[kind] + "</td></tr>"
+            num+=1
         result += "</table></div>"    
         
         self.response.out.write(result)

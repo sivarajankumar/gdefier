@@ -13,11 +13,10 @@ Arena
 	<a class="active">Arena</a>
 </div>
 </center>
-<div class="gcb-cols">
-	<h1 class="gcb-col-12 gcb-aside" align="center" style="color:#555555">
+
+	<h1 id="H1" align="center" style="color:#555555">
 	{{defy.lname}}<font class="gcb-col-12 gcb-aside" align="center" color="#F44F4F"> VS </font>{{defy.rname}}
 	</h1>
-</div>
 {% endblock %}
 
 {% block main_content %}
@@ -49,23 +48,55 @@ Arena
 	<center>
 	{% endfor %}
 {% else %}
-<div align=center class= "container">
-	<div class="lname" align="left">
-		{{defy.lscore}}
-		{{defy.lended}}
+<div class= "arena_container" width="800px">
+	<div class="arena_lname" >
+		<blockquote>
+		<cite>{{defy.lname}}</cite>
+	    <p><font style="font-size: x-large;" color="#0187b8">Right answers:</font> +{{defy.lscore[1]-defy.lscore[2]}}x50={{(defy.lscore[1]-defy.lscore[2])*50}}<br> 
+	       <font style="font-size: x-large;" color="#6A0888">Fails: </font> -{{defy.lscore[2]}}x15={{defy.lscore[2]*15}}<br>
+			   <font style="font-size: x-large;" color="#5E610B">Hints: </font> -{{defy.lscore[3]}}x20={{defy.lscore[3]*20}}<br>
+	       <font style="font-size: x-large;" color="#f49e23">Final Score = </font><font style="font-size: xx-large;"> {{defy.lscore[0]}}</font><br><br>	    	
+
+		{% if defy.rended and defy.lended%}
+ 			{% if defy.lscore > defy.rscore %}
+				<font style="font-size: xx-large;" color="#2fd51d">WINNER</font>
+			{% else %}
+				<font style="font-size: xx-large;" color="#FE2E2E">LOOSER</font>
+			{% endif %}
+		{% else%}
+ 			 <font style="font-size: xx-large;">Waiting for the opponent...</font>
+		{% endif %}
+			    </p>
+		</blockquote>
 	</div>
-	<div class="rname" align="right">
-		{{defy.rscore}}
-		{{defy.rended}}
+	<div class="arena_rname" >
+		<blockquote>
+		<cite>{{defy.rname}}</cite>	
+	    <p><font style="font-size: x-large;" color="#0187b8">Right answers:</font> +{{defy.rscore[1]-defy.rscore[2]}}x50={{(defy.rscore[1]-defy.rscore[2])*50}}<br> 
+	       <font style="font-size: x-large;" color="#6A0888">Fails: </font> -{{defy.rscore[2]}}x15={{defy.rscore[2]*15}}<br>
+			   <font style="font-size: x-large;" color="#5E610B">Hints: </font> -{{defy.rscore[3]}}x20={{defy.rscore[3]*20}}<br>
+	       <font style="font-size: x-large;" color="#f49e23">Final Score = </font><font style="font-size: xx-large;"> {{defy.rscore[0]}}</font><br><br>	    	
+ 		{% if defy.rended and defy.lended%}
+ 			{% if defy.rscore > defy.lscore %}
+				<font style="font-size: xx-large;" color="#2fd51d">WINNER</font>
+			{% else %}
+				<font style="font-size: xx-large;" color="#FE2E2E">LOOSER</font>
+			{% endif %}
+		{% else %}
+ 			 <font style="font-size: xx-large;">Waiting for the opponent...</font>
+		{% endif %}
+			    </p>
+		</blockquote>
 	</div>
 </div>	
 {% endif %}
-
+<link href='http://fonts.googleapis.com/css?family=Loved+by+the+King|Raleway:400' rel='stylesheet' type='text/css'>
 <style type="text/css">
 {% include 'resources/css/buttons.css' %}
 {% include 'resources/css/buttons2.css' %}
 {% include 'resources/countdown/style.css' %}
 {% include 'resources/css/breadcrumb.css' %}
+{% include 'resources/css/notebook.css' %}
 
 {% if defy_round == 0 %}
 #last, [id^="next"], [id^="khan"], #countdown{
@@ -89,6 +120,13 @@ display: none;
 	}	
 	{% endif %}
 {% endif %}	
+
+#H1{
+font-family: Loved by the King;
+} 
+blockquote{
+    width: 300px;
+}
 	
 </style>
 <!-- <script src="http://thecodeplayer.com/uploads/js/prefixfree-1.0.7.js" type="text/javascript" type="text/javascript"></script> -->

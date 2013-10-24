@@ -30,33 +30,9 @@
 		  </div>
 	{% endfor %}
 		  </div>
-  {% endif %}
-
-<!--  <div style="margin-top: 20px;" class="gcb-cols"> -->
-<!--       <div class="gcb-col-1"> -->
-<!--       </div> -->
-<!--       <div class="gcb-col-9"> -->
-
-<!--         <h1 class="gcb-unit-header"> -->
-<!--           {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #} -->
-<!--           {{ gettext('G-Defier Module Settings') }} -->
-<!--         </h1> -->
-<!--         <div id="gcb-main"> -->
-<!--           <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">	 -->
-<!-- 		    {% for key in entity.module recursive %} -->
-<!-- 		        <li>{{ key }} : {{ entity.module[key] }}</li>	 -->
-<!-- 		    {% endfor %} -->
-<!-- 		  </div> -->
-<!--       </div> -->
-<!--     </div> -->
-
-<style type="text/css">
-{% include 'resources/css/buttons.css' %}
-{% include 'resources/gritter/css/jquery.gritter.css' %}
-{% include 'resources/css/style.css' %}
-</style>  
-
-<div id='wrapper'>
+		  
+		  
+	<div id='wrapper'>
 	<div class='cool_btn1 green' id='sticky-wins'>
 		<h1 class='top'>{{player.wins}} <i>Wins</i></h1>
 		<h2>l</h2>
@@ -85,6 +61,19 @@
 <h1 class="gcb-col-12" align="center" style="color:#555555">
 Click on any badge to see classifications !!!
 </h1>
+	  
+  {% endif %}
+
+<style type="text/css">
+{% include 'resources/css/buttons.css' %}
+{% include 'resources/gritter/css/jquery.gritter.css' %}
+{% include 'resources/css/style.css' %}
+.cool_btn1 {
+border-radius: 120px;
+}
+</style>  
+
+
 <script type='text/javascript'>
 {% include 'resources/gritter/js/jquery.gritter.js' %}
 
