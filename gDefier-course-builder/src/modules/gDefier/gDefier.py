@@ -363,6 +363,10 @@ class StudentDefierHandler(BaseHandler):
             for i in range(entity['module']['blocks'].__len__()):
                 if entity['module']['blocks'][i]["block_title"]==b.blockID:
                     prctng.insert(i, "n"+str(n))
+                    
+        noprctng = prctng
+        noprctng = map(lambda s: s.strip('n'), noprctng)
+        print noprctng
             
         template = self.get_template(page, additional_dirs=[path])
         self.template_value['gDefier_transient_student'] = registration
@@ -370,6 +374,7 @@ class StudentDefierHandler(BaseHandler):
         self.template_value['entity'] = entity
         self.template_value['player'] = player
         self.template_value['prctng'] = prctng
+        self.template_value['noprctng'] = noprctng
         self.render(template)
 
 class GDefierDashboardHandler(object):

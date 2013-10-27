@@ -34,3 +34,7 @@ handlers:
 - url: /.*
   script: main.app
   secure: always
+- url: /fonts
+  static_dir: fonts
+  http_headers:
+    Access-Control-Allow-Origin: "*"

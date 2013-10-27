@@ -22,7 +22,7 @@
 	       </a>
            <section id="n{{number}}" class="container">
 			   <input type="radio" class="radio" name="progress" value="{{prctng[number]}}" id="{{prctng[number]}}">
-			   <label for="{{prctng[number]}}" class="label">{{prctng[number]}}% completed</label>
+			   <label for="{{prctng[number]}}" class="label">{{noprctng[number]}}% completed</label>
 			   <div class="progress" id="n{{number}}" >
 			     <div class="progress-bar"  id="n{{number}}"></div>
 			   </div>
@@ -59,7 +59,7 @@
 	</div>
 </div>
 <h1 class="gcb-col-12" align="center" style="color:#555555">
-Click on any badge to see classifications !!!
+Click on any badge to see rankings !!!
 </h1>
 	  
   {% endif %}
@@ -163,5 +163,11 @@ $(function(){
 		});
 	});
 });
+
+$('.container').css({
+    position: 'relative',
+    top: '-15px'
+});
+
 </script>
 {% endblock %}
