@@ -52,41 +52,62 @@ Arena
 {% else %}
 	<div class="arena_lname" >
 		<blockquote>
-		<cite>{{defy.lname}}</cite> <br>
-	    <div class="lobster">
-	    <font style="font-size: x-large;" color="#0187b8">Corrects:</font> +{{defy.lscore[1]-defy.lscore[2]}}x50={{(defy.lscore[1]-defy.lscore[2])*50}}<br> 
-	       <font style="font-size: x-large;" color="#6A0888">Fails: </font> -{{defy.lscore[2]}}x15={{defy.lscore[2]*15}}<br>
-			   <font style="font-size: x-large;" color="#5E610B">Hints: </font> -{{defy.lscore[3]}}x20={{defy.lscore[3]*20}}<br>
-	       <font style="font-size: x-large;" color="#f49e23">Final Score = </font><font style="font-size: xx-large;"> {{defy.lscore[0]}}</font><br><br>	    	
-
+		<cite>{{defy.lname}}</cite>
+	    <table class="lobster" id="cssTable">
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#0187b8">Rights:</font></td><td>+{{defy.lscore[1]-defy.lscore[2]}}x50=+{{(defy.lscore[1]-defy.lscore[2])*50}}</td> 
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#6A0888">Fails:</font></td><td>-{{defy.lscore[2]}}x15=-{{defy.lscore[2]*15}}</td>
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#5E610B">Hints:</font></td><td>-{{defy.lscore[3]}}x20=-{{defy.lscore[3]*20}}</td>
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#f49e23">Score:</font></td><td style="font-size: xx-large;">={{defy.lscore[0]}}</td>	    	
+		</tr>
+		</table> 
+		<br>
+		<div class="lobster" style="font-size: xx-large;" align="center">
 		{% if defy.rended and defy.lended%}
  			{% if defy.lscore > defy.rscore %}
-				<font style="font-size: xx-large;" color="#2fd51d">WINNER</font>
+				<font color="#2fd51d">WINNER</font>
 			{% else %}
-				<font style="font-size: xx-large;" color="#FE2E2E">LOOSER</font>
+				<font color="#FE2E2E">LOOSER</font>
 			{% endif %}
 		{% else%}
- 			 <font style="font-size: xx-large;">Waiting for the opponent...</font>
+ 			 Waiting for the opponent...
 		{% endif %}
 		</div>
 		</blockquote>
 	</div>
 	<div class="arena_rname" >
 		<blockquote>
-		<cite>{{defy.rname}}</cite>	<br>
-		<div class="lobster">
-	    <font style="font-size: x-large;" color="#0187b8">Right answers:</font> +{{defy.rscore[1]-defy.rscore[2]}}x50={{(defy.rscore[1]-defy.rscore[2])*50}}<br> 
-	       <font style="font-size: x-large;" color="#6A0888">Fails: </font> -{{defy.rscore[2]}}x15={{defy.rscore[2]*15}}<br>
-			   <font style="font-size: x-large;" color="#5E610B">Hints: </font> -{{defy.rscore[3]}}x20={{defy.rscore[3]*20}}<br>
-	       <font style="font-size: x-large;" color="#f49e23">Final Score = </font><font style="font-size: xx-large;"> {{defy.rscore[0]}}</font><br><br>	    	
- 		{% if defy.rended and defy.lended%}
+		<cite>{{defy.lname}}</cite>
+	    <table class="lobster" id="cssTable">
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#0187b8">Rights:</font></td><td>+{{defy.rscore[1]-defy.rscore[2]}}x50=+{{(defy.rscore[1]-defy.rscore[2])*50}}</td> 
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#6A0888">Fails:</font></td><td>-{{defy.rscore[2]}}x15=-{{defy.rscore[2]*15}}</td>
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#5E610B">Hints:</font></td><td>-{{defy.rscore[3]}}x20=-{{defy.rscore[3]*20}}</td>
+	    </tr>
+	    <tr>
+	    <td style="font-size: x-large;"><font color="#f49e23">Score:</font></td><td style="font-size: xx-large;">={{defy.rscore[0]}}</td>	    	
+		</tr>
+		</table> 
+		<br>
+		<div class="lobster" style="font-size: xx-large;" align="center">
+		{% if defy.rended and defy.lended%}
  			{% if defy.rscore > defy.lscore %}
-				<font style="font-size: xx-large;" color="#2fd51d">WINNER</font>
+				<font color="#2fd51d">WINNER</font>
 			{% else %}
-				<font style="font-size: xx-large;" color="#FE2E2E">LOOSER</font>
+				<font color="#FE2E2E">LOOSER</font>
 			{% endif %}
-		{% else %}
- 			 <font style="font-size: xx-large;">Waiting for the opponent...</font>
+		{% else%}
+ 			 Waiting for the opponent...
 		{% endif %}
 		</div>
 		</blockquote>
@@ -127,6 +148,7 @@ display: none;
 .lobster{
 font-family: Loved by the King;
 font-size: xx-large;
+font-weight: bold;
 } 
 blockquote{
     width: 270px;
@@ -151,6 +173,12 @@ blockquote{
     width:34%;
     height: 100%;    
     display: inline-block;
+}
+
+#cssTable td 
+{
+    text-align:right; 
+    vertical-align:middle;
 }
 	
 </style>
